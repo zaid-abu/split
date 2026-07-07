@@ -1,9 +1,157 @@
 :root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  color-scheme: light;
+
+  --split-font-display:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --split-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  --split-font-rounded: "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic", sans-serif;
+  --split-font-serif: Georgia, "Times New Roman", serif;
+
+  --font-display: var(--split-font-display);
+  --font-mono: var(--split-font-mono);
+  --font-rounded: var(--split-font-rounded);
+  --font-serif: var(--split-font-serif);
+
+  --split-color-background: #f5f7fa;
+  --split-color-background-alt: #eef3f8;
+  --split-color-surface: #ffffff;
+  --split-color-surface-muted: #f8fafc;
+  --split-color-surface-elevated: #ffffff;
+
+  --split-color-glass: rgb(255 255 255 / 68%);
+  --split-color-glass-strong: rgb(255 255 255 / 82%);
+  --split-color-glass-dark: rgb(15 23 42 / 58%);
+  --split-color-glass-border: rgb(255 255 255 / 72%);
+  --split-color-glass-stroke: rgb(15 23 42 / 8%);
+
+  --split-color-text-primary: #101828;
+  --split-color-text-secondary: #475467;
+  --split-color-text-muted: #98a2b3;
+  --split-color-text-inverse: #ffffff;
+
+  --split-color-accent: #2563eb;
+  --split-color-accent-pressed: #1d4ed8;
+  --split-color-accent-soft: #dbeafe;
+  --split-color-accent-glass: rgb(37 99 235 / 14%);
+
+  --split-color-positive: #059669;
+  --split-color-positive-soft: #d1fae5;
+  --split-color-positive-glass: rgb(5 150 105 / 14%);
+
+  --split-color-negative: #dc2626;
+  --split-color-negative-soft: #fee2e2;
+  --split-color-negative-glass: rgb(220 38 38 / 12%);
+
+  --split-color-warning: #f59e0b;
+  --split-color-warning-soft: #fef3c7;
+  --split-color-warning-glass: rgb(245 158 11 / 14%);
+
+  --split-color-info: #0891b2;
+  --split-color-info-soft: #cffafe;
+
+  --split-color-border: #e4e7ec;
+  --split-color-border-strong: #d0d5dd;
+  --split-color-overlay: rgb(15 23 42 / 42%);
+  --split-color-scrim: rgb(15 23 42 / 16%);
+
+  --split-gradient-app-background: linear-gradient(135deg, #f5f7fa 0%, #eaf6f2 48%, #eef3ff 100%);
+  --split-gradient-hero-balance: linear-gradient(135deg, #2563eb 0%, #059669 100%);
+  --split-gradient-warning: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+
+  --split-space-0: 0;
+  --split-space-1: 4px;
+  --split-space-2: 8px;
+  --split-space-3: 12px;
+  --split-space-4: 16px;
+  --split-space-5: 20px;
+  --split-space-6: 24px;
+  --split-space-8: 32px;
+  --split-space-10: 40px;
+  --split-space-12: 48px;
+
+  --split-radius-xs: 6px;
+  --split-radius-sm: 8px;
+  --split-radius-md: 12px;
+  --split-radius-lg: 16px;
+  --split-radius-xl: 20px;
+  --split-radius-2xl: 24px;
+  --split-radius-full: 999px;
+
+  --split-type-display: 700 34px / 40px var(--split-font-display);
+  --split-type-title-1: 700 28px / 34px var(--split-font-display);
+  --split-type-title-2: 700 22px / 28px var(--split-font-display);
+  --split-type-title-3: 600 18px / 24px var(--split-font-display);
+  --split-type-body: 500 16px / 24px var(--split-font-display);
+  --split-type-body-regular: 400 16px / 24px var(--split-font-display);
+  --split-type-callout: 500 14px / 20px var(--split-font-display);
+  --split-type-caption: 500 12px / 16px var(--split-font-display);
+  --split-type-micro: 600 11px / 14px var(--split-font-display);
+
+  --split-shadow-sm: 0 2px 8px rgb(16 24 40 / 6%);
+  --split-shadow-md: 0 8px 18px rgb(16 24 40 / 10%);
+  --split-shadow-glass: 0 12px 24px rgb(16 24 40 / 12%);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  background: var(--split-color-background);
+  font-family: var(--split-font-display);
+  text-size-adjust: 100%;
+}
+
+body {
+  background: var(--split-gradient-app-background);
+  color: var(--split-color-text-primary);
+  font: var(--split-type-body-regular);
+  letter-spacing: 0;
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0;
+}
+
+button {
+  min-height: 44px;
+}
+
+a {
+  color: var(--split-color-accent);
+}
+
+img,
+picture,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--split-color-accent);
+  color: var(--split-color-text-inverse);
 }

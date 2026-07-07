@@ -1,98 +1,128 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from "react-native";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { AppButton } from "@/components/ui/AppButton";
+import { AppText } from "@/components/ui/AppText";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+import { GlassScreen } from "@/components/ui/GlassScreen";
+import { IconButton } from "@/components/ui/IconButton";
+import { theme } from "@/constants/theme";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+const summaryRows = [
+  { label: "You are owed", value: "$128.40", tone: "positive" as const },
+  { label: "You owe", value: "$42.15", tone: "negative" as const },
+  { label: "Net balance", value: "$86.25", tone: "primary" as const },
+];
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <GlassScreen>
+      <View style={styles.header}>
+        <View>
+          <AppText role="caption" tone="secondary">
+            Split foundation
+          </AppText>
+          <AppText role="title1">Shared money, clearly tracked.</AppText>
+        </View>
+        <IconButton label="Open settings" name="gearshape" tone="accent" />
+      </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <GlassPanel style={styles.hero}>
+        <View style={styles.heroHeader}>
+          <View>
+            <AppText role="caption" tone="secondary">
+              Net balance
+            </AppText>
+            <AppText role="display" tone="positive">
+              $86.25
+            </AppText>
+          </View>
+          <View style={styles.statusPill}>
+            <AppText role="micro" tone="accent">
+              Synced
+            </AppText>
+          </View>
+        </View>
+        <AppText tone="secondary">
+          Your dashboard will show balances derived from expenses, splits, and settlements.
+        </AppText>
+      </GlassPanel>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+      <View style={styles.summaryGrid}>
+        {summaryRows.map((row) => (
+          <GlassPanel key={row.label} strength="strong" style={styles.summaryPanel}>
+            <AppText role="caption" tone="secondary">
+              {row.label}
+            </AppText>
+            <AppText role="title3" tone={row.tone}>
+              {row.value}
+            </AppText>
+          </GlassPanel>
+        ))}
+      </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <GlassPanel strength="strong" style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View>
+            <AppText role="title3">Foundation ready</AppText>
+            <AppText role="caption" tone="secondary">
+              Phase 1 app shell and theme
+            </AppText>
+          </View>
+        </View>
+        <View style={styles.checkList}>
+          <AppText tone="secondary">Root stack navigation is ready for auth and tabs.</AppText>
+          <AppText tone="secondary">Shared glass primitives are available for future screens.</AppText>
+          <AppText tone="secondary">Supabase setup begins in the next foundation feature.</AppText>
+        </View>
+      </GlassPanel>
+
+      <View style={styles.actions}>
+        <AppButton label="Add expense" />
+        <AppButton label="Settle up" variant="secondary" />
+      </View>
+    </GlassScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  header: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: theme.spacing[4],
+    justifyContent: "space-between",
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  hero: {
+    gap: theme.spacing[4],
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  heroHeader: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: theme.spacing[4],
+    justifyContent: "space-between",
   },
-  title: {
-    textAlign: 'center',
+  statusPill: {
+    backgroundColor: theme.colors.accentGlass,
+    borderRadius: theme.radii.full,
+    paddingHorizontal: theme.spacing[3],
+    paddingVertical: theme.spacing[1],
   },
-  code: {
-    textTransform: 'uppercase',
+  summaryGrid: {
+    gap: theme.spacing[3],
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  summaryPanel: {
+    gap: theme.spacing[1],
+  },
+  section: {
+    gap: theme.spacing[4],
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  checkList: {
+    gap: theme.spacing[3],
+  },
+  actions: {
+    gap: theme.spacing[3],
   },
 });

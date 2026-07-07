@@ -6,9 +6,9 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ## Current Status
 
-**Phase:** Context rewrite / Foundation planning  
-**Last completed:** Rewrote project context for Expo SDK 57 + Supabase money splitting app  
-**Next:** Build Phase 1 — App Shell and Theme
+**Phase:** Phase 1 — Foundation  
+**Last completed:** 01 App Shell and Theme  
+**Next:** Build Phase 1 — 02 Supabase Setup
 
 ---
 
@@ -16,7 +16,7 @@ Update this file after every completed feature. Any AI agent reading this should
 
 ### Phase 1 — Foundation
 
-- [ ] 01 App Shell and Theme
+- [x] 01 App Shell and Theme
 - [ ] 02 Supabase Setup
 - [ ] 03 Auth and Onboarding
 

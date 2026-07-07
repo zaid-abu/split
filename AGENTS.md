@@ -24,7 +24,7 @@ Core stack:
 - TypeScript strict
 - Supabase Auth, Postgres, Storage, Edge Functions, and Realtime
 - Tokenized React Native styles
-- Modern glassmorphism UI
+- Vibrant flat UI with rounded cards and soft shadows
 
 Primary app areas:
 
@@ -96,7 +96,7 @@ If implementation details conflict, use this authority order:
 ## UI Rules
 
 - Build mobile-first screens with safe-area-aware layout.
-- Use modern glassmorphism with readable contrast and restrained depth.
+- Use a vibrant flat UI with solid surface cards, readable contrast, and soft drop shadows.
 - Use green for positive balances or money owed to the user.
 - Use red for money the user owes or destructive actions.
 - Every network-backed screen needs loading, empty, error, offline, and success states.

@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 
 import { theme } from "@/constants/theme";
+import { AppScreen } from "@/components/ui/AppScreen";
+import { AppCard } from "@/components/ui/AppCard";
+import { AppText } from "@/components/ui/AppText";
+import { AuthProvider, useAuth } from "@/lib/auth";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -13,10 +17,46 @@ SplashScreen.setOptions({
   fade: true,
 });
 
-export default function RootLayout() {
+function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const [isReady, setIsReady] = useState(false);
   const navigationTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
+  const { session, profile, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (!session && !inAuthGroup) {
+      router.replace("/(auth)/splash");
+    } else if (session) {
+      if (profile && !profile.onboarding_completed) {
+        if (segments[1] !== "profile-setup" && segments[1] !== "permissions") {
+          router.replace("/(auth)/profile-setup");
+        }
+      } else if (profile?.onboarding_completed && inAuthGroup) {
+        router.replace("/(tabs)/home" as any);
+      }
+    }
+  }, [session, profile, isLoading, segments, router]);
+
+  return (
+    <ThemeProvider value={navigationTheme}>
+      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: theme.colors.background },
+          headerShown: false,
+        }}
+      />
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     async function prepareShell(): Promise<void> {
@@ -42,15 +82,34 @@ export default function RootLayout() {
     return null;
   }
 
+  const hasSupabaseEnv =
+    !!process.env.EXPO_PUBLIC_SUPABASE_URL &&
+    !!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!hasSupabaseEnv) {
+    return (
+      <AppScreen contentStyle={{ justifyContent: "center" }}>
+        <AppCard>
+          <AppText role="title2" tone="negative" style={{ marginBottom: theme.spacing[2] }}>
+            Missing Configuration
+          </AppText>
+          <AppText>
+            Please create a .env file at the project root with your Supabase credentials:
+          </AppText>
+          <AppText tone="muted" style={{ marginTop: theme.spacing[4] }}>
+            EXPO_PUBLIC_SUPABASE_URL
+          </AppText>
+          <AppText tone="muted">
+            EXPO_PUBLIC_SUPABASE_ANON_KEY
+          </AppText>
+        </AppCard>
+      </AppScreen>
+    );
+  }
+
   return (
-    <ThemeProvider value={navigationTheme}>
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      <Stack
-        screenOptions={{
-          contentStyle: { backgroundColor: theme.colors.background },
-          headerShown: false,
-        }}
-      />
-    </ThemeProvider>
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }

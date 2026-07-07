@@ -28,7 +28,6 @@ Confirmed package baseline from the local project:
 - `react-native` `0.86.0`
 - `react` `19.2.3`
 - `expo-router` `~57.0.4`
-- `expo-glass-effect` `~57.0.0`
 - `expo-image` `~57.0.0`
 
 Rules:
@@ -151,18 +150,7 @@ Rules:
 
 ---
 
-## `expo-glass-effect`
 
-Use for native glass surfaces where available.
-
-Rules:
-
-- Wrap major panels, dashboard summaries, sheets, and navigation surfaces when it improves clarity.
-- Always provide a tokenized fallback using `theme.colors.glass` and `theme.colors.glassBorder`.
-- Avoid heavy glass effects behind dense text or long lists.
-- Verify on iOS, Android, and web because platform behavior differs.
-
----
 
 ## `expo-image`
 

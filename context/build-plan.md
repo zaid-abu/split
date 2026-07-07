@@ -13,8 +13,8 @@ Build visible UI with realistic mock data first, verify interaction states, then
 **UI:**
 
 - Root layout with safe areas, status bar, app background, and font loading.
-- Glassmorphism theme tokens in `src/constants/theme.ts`.
-- Shared primitives: `GlassScreen`, `GlassPanel`, `AppText`, `AppButton`, `IconButton`.
+- Vibrant flat UI theme tokens in `src/constants/theme.ts`.
+- Shared primitives: `AppScreen`, `AppCard`, `AppText`, `AppButton`, `IconButton`.
 - Not-found screen.
 
 **Logic:**
@@ -69,7 +69,7 @@ Build visible UI with realistic mock data first, verify interaction states, then
 **UI:**
 
 - Tabs: Home, Friends, Groups, Activity, Account.
-- Glass tab bar.
+- Solid tab bar.
 - Active/inactive icon and label states.
 
 **Logic:**

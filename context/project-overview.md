@@ -4,7 +4,7 @@
 
 Split is a mobile-first money splitting app for friends, roommates, couples, travel groups, and small shared households. Users can add expenses, split them in flexible ways, track balances, settle up, and understand spending patterns over time.
 
-The product is built with **Expo SDK 57**, **Expo Router**, and **Supabase**. The UI direction is modern glassmorphism: translucent surfaces, soft depth, crisp typography, subtle borders, and clear red/green financial signals.
+The product is built with **Expo SDK 57**, **Expo Router**, and **Supabase**. The UI direction is a vibrant flat UI: solid surface cards, deep indigo accents, large border radii, and clear red/green financial signals.
 
 ---
 
@@ -181,7 +181,7 @@ Production-grade screens must include:
 - Settlement recording and simplified debt suggestions.
 - Analytics dashboards and export.
 - Offline-aware UI states.
-- Modern glassmorphism design system across mobile and web.
+- Vibrant flat design system across mobile and web.
 
 ---
 

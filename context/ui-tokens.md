@@ -2,7 +2,7 @@
 
 Design tokens for Split. Use these values through `src/constants/theme.ts` and shared UI primitives. Do not hardcode colors, radii, shadows, or spacing inside screens.
 
-The design direction is modern glassmorphism: translucent panels, soft blur, crisp borders, gentle depth, and clear financial color semantics.
+The design direction is a vibrant flat UI: solid surface cards, crisp borders, gentle depth via drop shadows, and clear financial color semantics.
 
 ---
 
@@ -13,12 +13,11 @@ import { StyleSheet } from "react-native";
 import { theme } from "@/constants/theme";
 
 const styles = StyleSheet.create({
-  panel: {
-    backgroundColor: theme.colors.glass,
-    borderColor: theme.colors.glassBorder,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: theme.radii.lg,
+  card: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radii["2xl"],
     padding: theme.spacing[4],
+    ...theme.shadows.md,
   },
 });
 ```
@@ -27,9 +26,8 @@ Rules:
 
 - Use `theme` tokens in React Native styles.
 - Use semantic tokens like `positive`, `negative`, `warning`, and `accent`.
-- Use `expo-glass-effect` for native glass surfaces where supported.
-- Provide a tokenized translucent fallback for platforms where native glass is unavailable.
 - Never use raw hex values directly in components.
+- Do not use translucency or blur.
 
 ---
 
@@ -38,53 +36,45 @@ Rules:
 ```ts
 export const theme = {
   colors: {
-    background: "#F5F7FA",
-    backgroundAlt: "#EEF3F8",
+    background: "#F8F9FA",
+    backgroundAlt: "#FFFFFF",
     surface: "#FFFFFF",
-    surfaceMuted: "#F8FAFC",
+    surfaceMuted: "#F1F5F9",
     surfaceElevated: "#FFFFFF",
+    surfaceTintBlue: "#DDF0FF",
+    surfaceTintPurple: "#EFE9FF",
 
-    glass: "rgba(255, 255, 255, 0.68)",
-    glassStrong: "rgba(255, 255, 255, 0.82)",
-    glassDark: "rgba(15, 23, 42, 0.58)",
-    glassBorder: "rgba(255, 255, 255, 0.72)",
-    glassStroke: "rgba(15, 23, 42, 0.08)",
-
-    textPrimary: "#101828",
-    textSecondary: "#475467",
+    textPrimary: "#1C1C1E",
+    textSecondary: "#8E8E93",
     textMuted: "#98A2B3",
     textInverse: "#FFFFFF",
 
-    accent: "#2563EB",
-    accentPressed: "#1D4ED8",
-    accentSoft: "#DBEAFE",
-    accentGlass: "rgba(37, 99, 235, 0.14)",
+    accent: "#281B5A",
+    accentPressed: "#1C1242",
+    accentSoft: "#EFE9FF",
 
-    positive: "#059669",
-    positiveSoft: "#D1FAE5",
-    positiveGlass: "rgba(5, 150, 105, 0.14)",
+    positive: "#34C759",
+    positiveSoft: "#E8F8EA",
 
-    negative: "#DC2626",
-    negativeSoft: "#FEE2E2",
-    negativeGlass: "rgba(220, 38, 38, 0.12)",
+    negative: "#FF3B30",
+    negativeSoft: "#FFEBEA",
 
-    warning: "#F59E0B",
-    warningSoft: "#FEF3C7",
-    warningGlass: "rgba(245, 158, 11, 0.14)",
+    warning: "#FFCC00",
+    warningSoft: "#FFF9E5",
 
-    info: "#0891B2",
-    infoSoft: "#CFFAFE",
+    info: "#0A84FF",
+    infoSoft: "#E6F2FF",
 
-    border: "#E4E7EC",
-    borderStrong: "#D0D5DD",
-    overlay: "rgba(15, 23, 42, 0.42)",
-    scrim: "rgba(15, 23, 42, 0.16)",
+    border: "#E5E5EA",
+    borderStrong: "#C7C7CC",
+    overlay: "rgba(0, 0, 0, 0.4)",
+    scrim: "rgba(0, 0, 0, 0.1)",
   },
 
   gradients: {
-    appBackground: ["#F5F7FA", "#EAF6F2", "#EEF3FF"],
-    heroBalance: ["#2563EB", "#059669"],
-    warning: ["#F59E0B", "#EF4444"],
+    appBackground: ["#F8F9FA", "#F8F9FA"],
+    heroBalance: ["#281B5A", "#4A3399"],
+    warning: ["#FFCC00", "#FF9500"],
   },
 
   spacing: {
@@ -107,6 +97,7 @@ export const theme = {
     lg: 16,
     xl: 20,
     "2xl": 24,
+    "3xl": 32,
     full: 999,
   },
 
@@ -125,25 +116,25 @@ export const theme = {
 
   shadows: {
     sm: {
-      shadowColor: "#101828",
-      shadowOpacity: 0.06,
+      shadowColor: "#281B5A",
+      shadowOpacity: 0.04,
       shadowRadius: 8,
       shadowOffset: { width: 0, height: 2 },
       elevation: 2,
     },
     md: {
-      shadowColor: "#101828",
-      shadowOpacity: 0.1,
-      shadowRadius: 18,
-      shadowOffset: { width: 0, height: 8 },
-      elevation: 5,
+      shadowColor: "#281B5A",
+      shadowOpacity: 0.08,
+      shadowRadius: 16,
+      shadowOffset: { width: 0, height: 4 },
+      elevation: 4,
     },
-    glass: {
-      shadowColor: "#101828",
+    lg: {
+      shadowColor: "#281B5A",
       shadowOpacity: 0.12,
       shadowRadius: 24,
-      shadowOffset: { width: 0, height: 12 },
-      elevation: 6,
+      shadowOffset: { width: 0, height: 8 },
+      elevation: 8,
     },
   },
 } as const;
@@ -155,9 +146,9 @@ export const theme = {
 
 | Use | Token |
 | --- | --- |
-| App background | `background`, `backgroundAlt`, `gradients.appBackground` |
-| Main glass panels | `glass`, `glassBorder`, `glassStroke` |
-| High emphasis surface | `glassStrong`, `surfaceElevated` |
+| App background | `background` |
+| Main cards | `surface`, `surfaceElevated` |
+| Tinted cards | `surfaceTintBlue`, `surfaceTintPurple` |
 | Primary text | `textPrimary` |
 | Secondary text | `textSecondary` |
 | Placeholder or metadata | `textMuted` |
@@ -202,16 +193,14 @@ Use Inter through `expo-font`. Do not scale font size with viewport width.
 
 ## Component Tokens
 
-### Glass Panel
+### App Card
 
 ```ts
 {
-  backgroundColor: theme.colors.glass,
-  borderColor: theme.colors.glassBorder,
-  borderWidth: StyleSheet.hairlineWidth,
-  borderRadius: theme.radii.lg,
+  backgroundColor: theme.colors.surface,
+  borderRadius: theme.radii["2xl"],
   padding: theme.spacing[4],
-  ...theme.shadows.glass,
+  ...theme.shadows.md,
 }
 ```
 
@@ -220,7 +209,7 @@ Use Inter through `expo-font`. Do not scale font size with viewport width.
 | Variant | Background | Text | Border |
 | --- | --- | --- | --- |
 | Primary | `accent` | `textInverse` | none |
-| Secondary | `glassStrong` | `textPrimary` | `glassStroke` |
+| Secondary | `surfaceMuted` | `textPrimary` | none |
 | Positive | `positive` | `textInverse` | none |
 | Danger | `negative` | `textInverse` | none |
 | Ghost | transparent | `textPrimary` | none |
@@ -229,8 +218,8 @@ Use Inter through `expo-font`. Do not scale font size with viewport width.
 
 | State | Token |
 | --- | --- |
-| You are owed | `positive`, `positiveSoft`, `positiveGlass` |
-| You owe | `negative`, `negativeSoft`, `negativeGlass` |
+| You are owed | `positive`, `positiveSoft` |
+| You owe | `negative`, `negativeSoft` |
 | Settled | `textMuted`, `surfaceMuted` |
 | Pending payment | `warning`, `warningSoft` |
 
@@ -238,8 +227,8 @@ Use Inter through `expo-font`. Do not scale font size with viewport width.
 
 ```ts
 {
-  backgroundColor: theme.colors.glassStrong,
-  borderColor: theme.colors.glassStroke,
+  backgroundColor: theme.colors.surface,
+  borderColor: theme.colors.border,
   borderWidth: StyleSheet.hairlineWidth,
   borderRadius: theme.radii.md,
   minHeight: 48,

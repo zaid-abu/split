@@ -12,8 +12,7 @@
 | Database | Supabase Postgres | Source of truth for users, groups, expenses, balances |
 | Storage | Supabase Storage | Avatars, group covers, receipt photos |
 | Realtime | Supabase Realtime | Activity, group, and balance updates |
-| Styling | React Native StyleSheet + tokens | Tokenized glassmorphism UI |
-| Native effects | `expo-glass-effect` | Glass surfaces where supported |
+| Styling | React Native StyleSheet + tokens | Tokenized flat UI |
 | Images | `expo-image` | Avatars, covers, receipts |
 | Linking | `expo-linking` | Invite links and deep links |
 | Notifications | Expo Notifications | Reminders and activity notifications |

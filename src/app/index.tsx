@@ -2,8 +2,8 @@ import { StyleSheet, View } from "react-native";
 
 import { AppButton } from "@/components/ui/AppButton";
 import { AppText } from "@/components/ui/AppText";
-import { GlassPanel } from "@/components/ui/GlassPanel";
-import { GlassScreen } from "@/components/ui/GlassScreen";
+import { AppCard } from "@/components/ui/AppCard";
+import { AppScreen } from "@/components/ui/AppScreen";
 import { IconButton } from "@/components/ui/IconButton";
 import { theme } from "@/constants/theme";
 
@@ -15,7 +15,7 @@ const summaryRows = [
 
 export default function HomeScreen() {
   return (
-    <GlassScreen>
+    <AppScreen>
       <View style={styles.header}>
         <View>
           <AppText role="caption" tone="secondary">
@@ -26,7 +26,7 @@ export default function HomeScreen() {
         <IconButton label="Open settings" name="gearshape" tone="accent" />
       </View>
 
-      <GlassPanel style={styles.hero}>
+      <AppCard style={styles.hero}>
         <View style={styles.heroHeader}>
           <View>
             <AppText role="caption" tone="secondary">
@@ -45,22 +45,22 @@ export default function HomeScreen() {
         <AppText tone="secondary">
           Your dashboard will show balances derived from expenses, splits, and settlements.
         </AppText>
-      </GlassPanel>
+      </AppCard>
 
       <View style={styles.summaryGrid}>
         {summaryRows.map((row) => (
-          <GlassPanel key={row.label} strength="strong" style={styles.summaryPanel}>
+          <AppCard key={row.label} variant="tintBlue" style={styles.summaryPanel}>
             <AppText role="caption" tone="secondary">
               {row.label}
             </AppText>
             <AppText role="title3" tone={row.tone}>
               {row.value}
             </AppText>
-          </GlassPanel>
+          </AppCard>
         ))}
       </View>
 
-      <GlassPanel strength="strong" style={styles.section}>
+      <AppCard variant="tintBlue" style={styles.section}>
         <View style={styles.sectionHeader}>
           <View>
             <AppText role="title3">Foundation ready</AppText>
@@ -71,16 +71,16 @@ export default function HomeScreen() {
         </View>
         <View style={styles.checkList}>
           <AppText tone="secondary">Root stack navigation is ready for auth and tabs.</AppText>
-          <AppText tone="secondary">Shared glass primitives are available for future screens.</AppText>
+          <AppText tone="secondary">Shared card primitives are available for future screens.</AppText>
           <AppText tone="secondary">Supabase setup begins in the next foundation feature.</AppText>
         </View>
-      </GlassPanel>
+      </AppCard>
 
       <View style={styles.actions}>
         <AppButton label="Add expense" />
         <AppButton label="Settle up" variant="secondary" />
       </View>
-    </GlassScreen>
+    </AppScreen>
   );
 }
 
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   statusPill: {
-    backgroundColor: theme.colors.accentGlass,
+    backgroundColor: theme.colors.accentSoft,
     borderRadius: theme.radii.full,
     paddingHorizontal: theme.spacing[3],
     paddingVertical: theme.spacing[1],

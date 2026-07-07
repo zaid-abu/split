@@ -6,11 +6,11 @@ Concise rules for building Split UI. Follow these with `ui-tokens.md` and update
 
 ## Design Direction
 
-Split uses modern glassmorphism, but the app must remain practical for financial workflows.
+Split uses a vibrant flat UI, keeping the app practical for financial workflows.
 
-- Use translucent glass panels for dashboards, sheets, summaries, and repeated list rows.
+- Use solid surface cards for dashboards, sheets, summaries, and list rows.
 - Keep text high contrast and readable on every background.
-- Use restrained blur and shadow. The UI should feel light, not foggy.
+- Use soft drop shadows to separate cards from the background.
 - Use green only for positive balances and red only for money the user owes or destructive actions.
 - Avoid a one-note blue, purple, beige, or dark slate palette.
 
@@ -25,7 +25,7 @@ Split uses modern glassmorphism, but the app must remain practical for financial
 - Prefer bottom sheets for focused selectors: split method, category, filters, payment method.
 - Use full-screen flows for complex creation/editing: add expense, create group, onboarding.
 - Keep primary actions reachable near the bottom on mobile.
-- Do not nest cards inside cards. A glass panel can contain rows, but avoid panel-in-panel compositions.
+- Do not nest cards inside cards. An app card can contain rows, but avoid panel-in-panel compositions.
 
 ---
 
@@ -61,21 +61,18 @@ Rules:
 
 ---
 
-## Glass Surfaces
+## App Cards
 
-Glass panels use:
+App cards use:
 
-- Translucent background from `theme.colors.glass` or `glassStrong`.
-- Hairline border from `glassBorder` or `glassStroke`.
-- Radius `lg` or `xl`.
-- Shadow `glass` for major panels and `sm` for list rows.
-
-Use `expo-glass-effect` for native glass when available. Always provide a StyleSheet fallback using tokens.
+- Solid backgrounds from `theme.colors.surface` or `theme.colors.surfaceElevated`.
+- Large border radii (`lg`, `xl`, or `2xl`).
+- Soft drop shadows to provide depth without visual noise.
 
 Do not:
 
+- Use translucent backgrounds or blur effects.
 - Put large blocks of low-contrast text over busy images.
-- Use heavy blur behind dense lists.
 - Add decorative orbs or bokeh blobs.
 - Use gradients as a substitute for meaningful content.
 

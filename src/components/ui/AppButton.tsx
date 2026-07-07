@@ -15,12 +15,12 @@ export function AppButton({ label, variant = "primary", disabled, style, ...prop
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
-      style={({ pressed }) => [
+      style={(state) => [
         styles.root,
         styles[variant],
-        pressed && !disabled && styles.pressed,
+        state.pressed && !disabled && styles.pressed,
         disabled && styles.disabled,
-        typeof style === "function" ? style({ pressed }) : style,
+        typeof style === "function" ? style(state) : style,
       ]}
       {...props}
     >
@@ -58,9 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.accent,
   },
   secondary: {
-    backgroundColor: theme.colors.glassStrong,
-    borderColor: theme.colors.glassStroke,
-    borderWidth: StyleSheet.hairlineWidth,
+    backgroundColor: theme.colors.surfaceMuted,
   },
   positive: {
     backgroundColor: theme.colors.positive,

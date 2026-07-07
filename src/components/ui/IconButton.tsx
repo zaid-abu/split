@@ -21,10 +21,10 @@ export function IconButton({ name, label, tone = "primary", style, ...props }: I
       accessibilityLabel={label}
       accessibilityRole="button"
       hitSlop={theme.spacing[2]}
-      style={({ pressed }) => [
+      style={(state) => [
         styles.root,
-        pressed && styles.pressed,
-        typeof style === "function" ? style({ pressed }) : style,
+        state.pressed && styles.pressed,
+        typeof style === "function" ? style(state) : style,
       ]}
       {...props}
     >
@@ -36,8 +36,8 @@ export function IconButton({ name, label, tone = "primary", style, ...props }: I
 const styles = StyleSheet.create({
   root: {
     alignItems: "center",
-    backgroundColor: theme.colors.glassStrong,
-    borderColor: theme.colors.glassStroke,
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.border,
     borderRadius: theme.radii.full,
     borderWidth: StyleSheet.hairlineWidth,
     height: 44,

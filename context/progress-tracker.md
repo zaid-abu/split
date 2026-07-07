@@ -7,8 +7,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Current Status
 
 **Phase:** Phase 1 — Foundation  
-**Last completed:** 01 App Shell and Theme  
-**Next:** Build Phase 1 — 02 Supabase Setup
+**Last completed:** 03 Auth and Onboarding  
+**Next:** Build Phase 2 — 04 Bottom Tabs
 
 ---
 
@@ -17,8 +17,8 @@ Update this file after every completed feature. Any AI agent reading this should
 ### Phase 1 — Foundation
 
 - [x] 01 App Shell and Theme
-- [ ] 02 Supabase Setup
-- [ ] 03 Auth and Onboarding
+- [x] 02 Supabase Setup
+- [x] 03 Auth and Onboarding
 
 ### Phase 2 — Core Navigation and Home
 
@@ -72,7 +72,7 @@ Update this file after every completed feature. Any AI agent reading this should
 ## Decisions Made During Build
 
 - Tech stack is Expo SDK 57 with Expo Router and Supabase.
-- UI direction is modern glassmorphism with tokenized React Native styles.
+- UI direction is a vibrant flat UI with tokenized React Native styles.
 - Supabase is the backend for Auth, Postgres, Storage, Realtime, and Edge Functions.
 - Bottom navigation uses five tabs: Home, Friends, Groups, Activity, Account.
 - Balances must be derivable from expenses, splits, and settlements.

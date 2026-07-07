@@ -3,13 +3,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { theme } from "@/constants/theme";
 
-interface GlassScreenProps {
+interface AppScreenProps {
   children: React.ReactNode;
   scroll?: boolean;
   contentStyle?: ViewStyle;
 }
 
-export function GlassScreen({ children, scroll = true, contentStyle }: GlassScreenProps) {
+export function AppScreen({ children, scroll = true, contentStyle }: AppScreenProps) {
   const content = <View style={[styles.content, contentStyle]}>{children}</View>;
 
   return (

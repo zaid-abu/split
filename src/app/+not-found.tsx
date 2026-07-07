@@ -3,14 +3,14 @@ import { StyleSheet, View } from "react-native";
 
 import { AppButton } from "@/components/ui/AppButton";
 import { AppText } from "@/components/ui/AppText";
-import { GlassPanel } from "@/components/ui/GlassPanel";
-import { GlassScreen } from "@/components/ui/GlassScreen";
+import { AppCard } from "@/components/ui/AppCard";
+import { AppScreen } from "@/components/ui/AppScreen";
 import { theme } from "@/constants/theme";
 
 export default function NotFoundScreen() {
   return (
-    <GlassScreen scroll={false} contentStyle={styles.content}>
-      <GlassPanel style={styles.panel}>
+    <AppScreen scroll={false} contentStyle={styles.content}>
+      <AppCard style={styles.panel}>
         <View style={styles.copy}>
           <AppText role="title2">This screen is not available</AppText>
           <AppText tone="secondary">
@@ -20,8 +20,8 @@ export default function NotFoundScreen() {
         <Link href="/" asChild>
           <AppButton label="Back to Split" />
         </Link>
-      </GlassPanel>
-    </GlassScreen>
+      </AppCard>
+    </AppScreen>
   );
 }
 

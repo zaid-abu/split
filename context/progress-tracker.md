@@ -5,7 +5,7 @@ Update this file after every completed feature. A new agent should be able to re
 ## Current Status
 
 **Phase:** Phase 2 — Core Navigation and Home
-**Last completed:** Auth flow visual rewrite from `context/designs/Auth Flow.png`
+**Last completed:** Auth flow rewritten from scratch using `context/designs/Auth Flow.png`
 **Current documentation update:** Context files rewritten 2026-07-08 for production-grade build guidance and design usage
 **Next product feature:** Build Phase 2 — 05 Home Dashboard using `context/designs/image.png`
 
@@ -18,6 +18,7 @@ Update this file after every completed feature. A new agent should be able to re
 - [x] 03 Auth and Onboarding
   - Rewritten 2026-07-08 with welcome, separate sign-in/register, verification, profile setup, and permissions screens.
   - Auth Flow design applied 2026-07-08 to welcome, login, and register screens with icon inputs, social placeholders, and terms consent.
+  - Auth flow rebuilt 2026-07-08 with a shared form scaffold, visible back buttons, refreshed auth illustration, accessible labeled auth fields, and consistent verify/profile/permissions screens.
 
 ### Phase 2 — Core Navigation and Home
 
@@ -82,7 +83,7 @@ Update this file after every completed feature. A new agent should be able to re
 - Remainders must be assigned deterministically.
 - Expense edits need versioning or equivalent conflict detection.
 - Integrated payments remain a placeholder until a provider is explicitly selected.
-- Auth/onboarding uses email/password only for now; Google, Apple, phone OTP, contacts import, and real push permission registration remain out of scope until explicitly added.
+- Auth/onboarding uses email/password only for now; Google, Apple, Facebook, phone OTP, contacts import, and real push permission registration remain out of scope until explicitly added.
 - New users flow through welcome, register, optional verification, profile setup, permissions, then Home.
 - `onboarding_completed` is set only after permissions.
 
@@ -106,6 +107,7 @@ Every feature should include:
 ## Current Known Gaps
 
 - Home Dashboard is next and not yet built.
+- Auth social buttons, forgot password, phone number, and notification permission prompts remain UI placeholders until their backend/platform behavior is explicitly wired.
 - Supabase dependency/setup is noted in docs, but confirm current code before backend work because prior notes said it was not yet wired in app code.
 - Social auth buttons are placeholders until OAuth is configured.
 - Phone OTP is planned but not wired.
@@ -118,6 +120,7 @@ Every feature should include:
 ## Documentation Updates
 
 - 2026-07-08: Rewrote all context files with production-grade guidance, design reference usage, stricter architecture boundaries, UI rules, library guidance, build plan, and progress tracking.
+- 2026-07-08: Updated auth UI registry and progress notes after the from-scratch Auth Flow rewrite.
 
 ## Next Recommended Work
 

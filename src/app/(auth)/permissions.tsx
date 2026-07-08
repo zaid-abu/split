@@ -3,8 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SymbolView } from "expo-symbols";
 
-import { AppScreen } from "@/components/ui/AppScreen";
-import { AppCard } from "@/components/ui/AppCard";
+import { AuthFormScaffold } from "@/components/auth/AuthFormScaffold";
 import { AppText } from "@/components/ui/AppText";
 import { AppButton } from "@/components/ui/AppButton";
 import { theme } from "@/constants/theme";
@@ -40,20 +39,18 @@ export default function PermissionsScreen() {
   };
 
   return (
-    <AppScreen contentStyle={styles.container}>
-      <View style={styles.header}>
+    <AuthFormScaffold
+      title="Stay in the loop"
+      subtitle="Split can remind you about new expenses, settlement requests, and group updates."
+      onBack={() => router.replace("/(auth)/profile-setup")}
+    >
+      <View style={styles.form}>
         <View style={styles.stepBadge}>
           <AppText role="micro" tone="accent">
             step 2 of 2
           </AppText>
         </View>
-        <AppText role="title1">Stay in the loop</AppText>
-        <AppText tone="secondary">
-          Split can remind you about new expenses, payment requests, and group updates.
-        </AppText>
-      </View>
 
-      <AppCard style={styles.form}>
         <View style={styles.permissionRow}>
           <View style={styles.permissionIcon}>
             <SymbolView name="bell.badge.fill" size={24} tintColor={theme.colors.accent} />
@@ -95,22 +92,14 @@ export default function PermissionsScreen() {
           onPress={completeOnboarding}
           disabled={isLoading}
         />
-      </AppCard>
-    </AppScreen>
+      </View>
+    </AuthFormScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    paddingTop: theme.spacing[12],
-  },
-  header: {
-    alignItems: "flex-start",
-    gap: theme.spacing[2],
-    marginBottom: theme.spacing[8],
-  },
   stepBadge: {
+    alignSelf: "flex-start",
     backgroundColor: theme.colors.accentSoft,
     borderRadius: theme.radii.full,
     paddingHorizontal: theme.spacing[3],

@@ -3,10 +3,9 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { AuthField } from "@/components/auth/AuthField";
+import { AuthFormScaffold } from "@/components/auth/AuthFormScaffold";
 import { AuthSocialButton } from "@/components/auth/AuthSocialButton";
-import { AuthTopBar } from "@/components/auth/AuthTopBar";
 import { AppButton } from "@/components/ui/AppButton";
-import { AppScreen } from "@/components/ui/AppScreen";
 import { AppText } from "@/components/ui/AppText";
 import { routes } from "@/constants/routes";
 import { theme } from "@/constants/theme";
@@ -42,17 +41,17 @@ export default function SignInScreen() {
   };
 
   return (
-    <AppScreen scroll contentStyle={styles.container}>
-      <AuthTopBar onBack={() => router.replace(routes.auth.welcome)} />
-
-      <View style={styles.header}>
-        <AppText role="title1">Welcome back 👋</AppText>
-        <AppText tone="secondary">Login to continue to your account</AppText>
-      </View>
-
+    <AuthFormScaffold
+      title="Welcome back"
+      subtitle="Login to continue splitting expenses with your people."
+      footerPrompt="Do not have an account?"
+      footerActionLabel="Register"
+      onFooterAction={() => router.push(routes.auth.register)}
+    >
       <View style={styles.form}>
         <AuthField
           icon="envelope"
+          label="Email address"
           placeholder="Email or Phone number"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -62,6 +61,7 @@ export default function SignInScreen() {
         />
         <AuthField
           icon="lock"
+          label="Password"
           placeholder="Password"
           isPassword
           value={password}
@@ -104,32 +104,11 @@ export default function SignInScreen() {
           <AuthSocialButton provider="facebook" onPress={handleUnavailableSocial} />
         </View>
       </View>
-
-      <View style={styles.inlinePrompt}>
-        <AppText role="callout" tone="secondary">
-          Do not have an account?
-        </AppText>
-        <Pressable onPress={() => router.push(routes.auth.register)} hitSlop={theme.spacing[2]}>
-          <AppText role="callout" tone="accent">
-            Register
-          </AppText>
-        </Pressable>
-      </View>
-    </AppScreen>
+    </AuthFormScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: theme.spacing[8],
-    justifyContent: "flex-start",
-    paddingHorizontal: theme.spacing[6],
-    paddingTop: theme.spacing[5],
-  },
-  header: {
-    gap: theme.spacing[3],
-    paddingTop: theme.spacing[3],
-  },
   form: {
     gap: theme.spacing[4],
   },
@@ -158,15 +137,7 @@ const styles = StyleSheet.create({
   },
   socialRow: {
     flexDirection: "row",
-    gap: theme.spacing[4],
+    gap: theme.spacing[3],
     justifyContent: "center",
-  },
-  inlinePrompt: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: theme.spacing[1],
-    justifyContent: "center",
-    paddingBottom: theme.spacing[6],
   },
 });

@@ -14,9 +14,9 @@ export function AuthVisual({ compact = false }: AuthVisualProps) {
       <View style={styles.stripRoot}>
         <View style={styles.stripCopy}>
           <AppText role="caption" tone="secondary">
-            Shared balance
+            Group split
           </AppText>
-          <AppText role="title2">$84.00</AppText>
+          <AppText role="title2">USD 84.00</AppText>
           <View style={styles.stripPill}>
             <SymbolView name="checkmark.circle.fill" size={14} tintColor={theme.colors.positive} />
             <AppText role="micro" tone="positive">
@@ -40,15 +40,16 @@ export function AuthVisual({ compact = false }: AuthVisualProps) {
       <View style={styles.sweepOne} />
       <View style={styles.sweepTwo} />
       <View style={styles.sweepThree} />
+      <View style={styles.sweepFour} />
 
       <View style={styles.billCard}>
         <View style={styles.billIcon}>
           <SymbolView name="doc.text.fill" size={20} tintColor={theme.colors.info} />
         </View>
         <AppText role="caption" tone="secondary">
-          Dinner split
+          Trip dinner
         </AppText>
-        <AppText role="title2">$84.00</AppText>
+        <AppText role="title2">USD 84</AppText>
       </View>
 
       <View style={styles.path}>
@@ -78,6 +79,16 @@ export function AuthVisual({ compact = false }: AuthVisualProps) {
         </AppText>
       </View>
 
+      <View style={styles.personOne}>
+        <View style={styles.personHead} />
+        <View style={styles.personBody} />
+      </View>
+
+      <View style={styles.personTwo}>
+        <View style={styles.personHeadTwo} />
+        <View style={styles.personBodyTwo} />
+      </View>
+
       <View style={styles.friendRow}>
         <View style={[styles.avatar, styles.avatarBlue]}>
           <AppText role="micro">AZ</AppText>
@@ -104,9 +115,12 @@ export function AuthVisual({ compact = false }: AuthVisualProps) {
 const styles = StyleSheet.create({
   root: {
     backgroundColor: theme.colors.accent,
-    minHeight: 392,
+    borderBottomLeftRadius: theme.radii["3xl"],
+    borderBottomRightRadius: theme.radii["3xl"],
+    minHeight: 404,
     overflow: "hidden",
     padding: theme.spacing[5],
+    width: "100%",
   },
   stripRoot: {
     alignItems: "center",
@@ -191,6 +205,17 @@ const styles = StyleSheet.create({
     top: -44,
     transform: [{ rotate: "20deg" }],
     width: 240,
+  },
+  sweepFour: {
+    backgroundColor: theme.colors.negativeSoft,
+    borderRadius: theme.radii.full,
+    height: 180,
+    left: 112,
+    opacity: 0.42,
+    position: "absolute",
+    top: 160,
+    transform: [{ rotate: "28deg" }],
+    width: 70,
   },
   billCard: {
     alignSelf: "flex-start",
@@ -277,6 +302,60 @@ const styles = StyleSheet.create({
     right: 126,
     transform: [{ rotate: "12deg" }],
     width: 56,
+  },
+  personOne: {
+    bottom: 30,
+    height: 104,
+    left: -6,
+    position: "absolute",
+    transform: [{ rotate: "-18deg" }],
+    width: 74,
+  },
+  personHead: {
+    backgroundColor: theme.colors.warning,
+    borderRadius: theme.radii.full,
+    height: 28,
+    left: 30,
+    position: "absolute",
+    top: 0,
+    width: 28,
+    zIndex: 2,
+  },
+  personBody: {
+    backgroundColor: theme.colors.negativeSoft,
+    borderRadius: theme.radii["2xl"],
+    height: 76,
+    left: 8,
+    position: "absolute",
+    top: 24,
+    width: 58,
+  },
+  personTwo: {
+    height: 118,
+    position: "absolute",
+    right: -2,
+    top: 54,
+    transform: [{ rotate: "22deg" }],
+    width: 74,
+  },
+  personHeadTwo: {
+    backgroundColor: theme.colors.warning,
+    borderRadius: theme.radii.full,
+    height: 28,
+    left: 18,
+    position: "absolute",
+    top: 0,
+    width: 28,
+    zIndex: 2,
+  },
+  personBodyTwo: {
+    backgroundColor: theme.colors.accentPressed,
+    borderRadius: theme.radii["2xl"],
+    height: 86,
+    left: 8,
+    position: "absolute",
+    top: 24,
+    width: 58,
   },
   friendRow: {
     alignItems: "center",

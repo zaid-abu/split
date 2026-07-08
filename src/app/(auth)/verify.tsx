@@ -2,11 +2,10 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { AppScreen } from "@/components/ui/AppScreen";
-import { AppCard } from "@/components/ui/AppCard";
+import { AuthField } from "@/components/auth/AuthField";
+import { AuthFormScaffold } from "@/components/auth/AuthFormScaffold";
 import { AppText } from "@/components/ui/AppText";
 import { AppButton } from "@/components/ui/AppButton";
-import { TextField } from "@/components/ui/TextField";
 import { theme } from "@/constants/theme";
 import { resendSignupOtp, verifySignupOtp } from "@/services/auth";
 
@@ -79,17 +78,15 @@ export default function VerifyScreen() {
   };
 
   return (
-    <AppScreen contentStyle={styles.container}>
-      <View style={styles.header}>
-        <AppText role="title1">Check your email</AppText>
-        <AppText tone="secondary">
-          {safeEmail ? `Enter the code we sent to ${safeEmail}.` : "Open registration again to request a new code."}
-        </AppText>
-      </View>
-
-      <AppCard style={styles.form}>
-        <TextField
-          label="Verification Code"
+    <AuthFormScaffold
+      title="Check your email"
+      subtitle={safeEmail ? `Enter the code we sent to ${safeEmail}.` : "Open registration again to request a new code."}
+      onBack={() => router.back()}
+    >
+      <View style={styles.form}>
+        <AuthField
+          icon="number"
+          label="Verification code"
           placeholder="000000"
           keyboardType="number-pad"
           value={code}
@@ -120,20 +117,12 @@ export default function VerifyScreen() {
           onPress={handleResend}
           disabled={isLoading || isResending}
         />
-      </AppCard>
-    </AppScreen>
+      </View>
+    </AuthFormScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    paddingTop: theme.spacing[12],
-  },
-  header: {
-    gap: theme.spacing[2],
-    marginBottom: theme.spacing[8],
-  },
   form: {
     gap: theme.spacing[4],
   },

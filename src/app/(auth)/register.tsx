@@ -4,9 +4,8 @@ import { SymbolView } from "expo-symbols";
 import { useRouter } from "expo-router";
 
 import { AuthField } from "@/components/auth/AuthField";
-import { AuthTopBar } from "@/components/auth/AuthTopBar";
+import { AuthFormScaffold } from "@/components/auth/AuthFormScaffold";
 import { AppButton } from "@/components/ui/AppButton";
-import { AppScreen } from "@/components/ui/AppScreen";
 import { AppText } from "@/components/ui/AppText";
 import { routes } from "@/constants/routes";
 import { theme } from "@/constants/theme";
@@ -69,17 +68,17 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AppScreen scroll contentStyle={styles.container}>
-      <AuthTopBar onBack={() => router.replace(routes.auth.welcome)} />
-
-      <View style={styles.header}>
-        <AppText role="title1">Create account ✨</AppText>
-        <AppText tone="secondary">Register to get started with your wallet</AppText>
-      </View>
-
+    <AuthFormScaffold
+      title="Create account"
+      subtitle="Register to start splitting group expenses clearly."
+      footerPrompt="Already have an account?"
+      footerActionLabel="Login"
+      onFooterAction={() => router.push(routes.auth.signIn)}
+    >
       <View style={styles.form}>
         <AuthField
           icon="person"
+          label="Full name"
           placeholder="Full name"
           autoCapitalize="words"
           value={fullName}
@@ -88,6 +87,7 @@ export default function RegisterScreen() {
         />
         <AuthField
           icon="envelope"
+          label="Email address"
           placeholder="Email address"
           keyboardType="email-address"
           autoCapitalize="none"
@@ -97,6 +97,7 @@ export default function RegisterScreen() {
         />
         <AuthField
           icon="phone"
+          label="Phone number"
           placeholder="Phone number"
           keyboardType="phone-pad"
           value={phone}
@@ -104,6 +105,7 @@ export default function RegisterScreen() {
         />
         <AuthField
           icon="lock"
+          label="Password"
           placeholder="Password"
           isPassword
           value={password}
@@ -112,6 +114,7 @@ export default function RegisterScreen() {
         />
         <AuthField
           icon="lock"
+          label="Confirm password"
           placeholder="Confirm password"
           isPassword
           value={confirmPassword}
@@ -149,32 +152,11 @@ export default function RegisterScreen() {
           style={styles.primaryButton}
         />
       </View>
-
-      <View style={styles.inlinePrompt}>
-        <AppText role="callout" tone="secondary">
-          Already have an account?
-        </AppText>
-        <Pressable onPress={() => router.push(routes.auth.signIn)} hitSlop={theme.spacing[2]}>
-          <AppText role="callout" tone="accent">
-            Login
-          </AppText>
-        </Pressable>
-      </View>
-    </AppScreen>
+    </AuthFormScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: theme.spacing[6],
-    justifyContent: "flex-start",
-    paddingHorizontal: theme.spacing[6],
-    paddingTop: theme.spacing[5],
-  },
-  header: {
-    gap: theme.spacing[3],
-    paddingTop: theme.spacing[3],
-  },
   form: {
     gap: theme.spacing[3],
   },
@@ -206,13 +188,5 @@ const styles = StyleSheet.create({
   primaryButton: {
     marginTop: theme.spacing[5],
     minHeight: 66,
-  },
-  inlinePrompt: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: theme.spacing[1],
-    justifyContent: "center",
-    paddingBottom: theme.spacing[6],
   },
 });

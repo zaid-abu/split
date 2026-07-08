@@ -18,10 +18,10 @@ export default function WelcomeScreen() {
       <View style={styles.body}>
         <View style={styles.copy}>
           <AppText role="display" style={styles.title}>
-            Welcome to your <AppText role="display" tone="accent">wallet</AppText>
+            Split bills without the awkward math
           </AppText>
           <AppText tone="secondary" style={styles.subtitle}>
-            Manage shared money, add expenses, and track what everyone owes in one place.
+            Add shared expenses, see who owes what, and settle up with friends in one place.
           </AppText>
         </View>
 

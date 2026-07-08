@@ -73,6 +73,7 @@ Replace wallet-specific actions with Split actions such as add expense, settle u
 | `IconButton` | Accessible icon-only button | Built |
 | `TextField` | Labeled input with help/error text | Built |
 | `AuthVisual` | Finance illustration panel for auth | Built |
+| `AuthFormScaffold` | Shared auth form layout with top bar, header, content, and footer prompt | Built |
 | `AuthField` | Auth-specific icon-led field | Built |
 | `AuthSocialButton` | Social auth placeholder button | Built |
 | `AuthTopBar` | Auth back/avatar top row | Built |
@@ -157,7 +158,17 @@ Replace wallet-specific actions with Split actions such as add expense, settle u
 - **Variants:** Default tall welcome illustration panel; `compact` low-height wallet summary strip for form-heavy screens.
 - **Key style tokens:** `theme.colors.accent`, `accentPressed`, `surface`, `surfaceTintBlue`, `surfaceTintPurple`, `positive`, `warning`, `theme.radii`, `theme.shadows.md`.
 - **Required states:** Decorative and non-blocking; surrounding screen copy owns accessible explanation.
-- **Pattern notes:** Based on `context/designs/Auth Flow.png`. Keep visual rhythm without hardcoding inaccessible or unreadable text into the illustration.
+- **Pattern notes:** Rewritten 2026-07-08 from `context/designs/Auth Flow.png` as a responsive React Native illustration using Split-specific shared-expense language.
+
+### `AuthFormScaffold`
+
+- **File:** `src/components/auth/AuthFormScaffold.tsx`
+- **Purpose:** Shared layout for auth form screens with visible back/avatar top bar, title/subtitle header, form content, optional bottom slot, and inline footer prompt.
+- **Variants:** None.
+- **Key style tokens:** `theme.colors.background`, `theme.spacing[5]`, `theme.spacing[6]`, `theme.typography.title1`.
+- **Required states:** Content must remain scrollable and readable at 320px width; footer links must keep accessible hit targets.
+- **Accessibility notes:** Delegates visible back control to `AuthTopBar`; footer action is text but still a pressable navigation target.
+- **Pattern notes:** Use for sign-in, register, verify, profile setup, and permissions to match the compact form screens in `Auth Flow.png`.
 
 ### `AuthField`
 
@@ -166,7 +177,7 @@ Replace wallet-specific actions with Split actions such as add expense, settle u
 - **Variants:** `isPassword` adds a trailing show/hide password control.
 - **Key style tokens:** `theme.colors.surface`, `borderStrong`, `accent`, `negative`, `textPrimary`, `textSecondary`, `theme.radii.lg`, `theme.spacing[3]`, `theme.spacing[5]`.
 - **Required states:** Focus border, error border, optional error text, minimum 64px field height, password visibility toggle.
-- **Accessibility notes:** Must expose labels and error text despite placeholder-led visual style.
+- **Accessibility notes:** Requires a `label` prop so placeholder-led auth fields still expose stable accessible labels and error hints.
 - **Pattern notes:** Matches the auth mockup. Future auth-only fields should use this style instead of the general `TextField`.
 
 ### `AuthSocialButton`
@@ -175,17 +186,17 @@ Replace wallet-specific actions with Split actions such as add expense, settle u
 - **Purpose:** Square social sign-in button for auth screens.
 - **Variants:** `provider` supports `google`, `apple`, and `facebook`.
 - **Key style tokens:** `theme.colors.surface`, `border`, `textPrimary`, `info`, `theme.radii.lg`.
-- **Required states:** Accessible provider label, pressed opacity state, stable 84px by 104px button size.
+- **Required states:** Accessible provider label, pressed opacity state, stable height with flexible width so three buttons fit at 320px.
 - **Pattern notes:** UI placeholder until OAuth is configured. Do not imply backend support before `expo-auth-session` or Supabase OAuth wiring is added.
 
 ### `AuthTopBar`
 
 - **File:** `src/components/auth/AuthTopBar.tsx`
 - **Purpose:** Auth screen top row with back affordance and small decorative profile avatar.
-- **Variants:** None.
+- **Variants:** Optional `backLabel` for accessible back-button text.
 - **Key style tokens:** `theme.colors.surface`, `accentSoft`, `accentPressed`, `warningSoft`, `theme.radii.full`, `theme.radii.lg`.
-- **Required states:** Back button must expose an accessibility label and keep a 44px hit target.
-- **Pattern notes:** Use on compact auth forms under a hidden native header. The avatar is decorative until the user is authenticated.
+- **Required states:** Back button must be visibly present, expose an accessibility label, and keep a 44px hit target.
+- **Pattern notes:** Use on compact auth forms under a hidden native header. Rewritten 2026-07-08 to match the visible back control and avatar tile from `Auth Flow.png`.
 
 ## Planned Component Specifications
 

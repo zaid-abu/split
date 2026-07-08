@@ -2,11 +2,10 @@ import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { AppScreen } from "@/components/ui/AppScreen";
-import { AppCard } from "@/components/ui/AppCard";
+import { AuthField } from "@/components/auth/AuthField";
+import { AuthFormScaffold } from "@/components/auth/AuthFormScaffold";
 import { AppText } from "@/components/ui/AppText";
 import { AppButton } from "@/components/ui/AppButton";
-import { TextField } from "@/components/ui/TextField";
 import { theme } from "@/constants/theme";
 import { upsertProfile } from "@/services/profiles";
 import { useAuth } from "@/lib/auth";
@@ -63,28 +62,27 @@ export default function ProfileSetupScreen() {
   };
 
   return (
-    <AppScreen scroll contentStyle={styles.container}>
-      <View style={styles.header}>
+    <AuthFormScaffold
+      title="Complete your profile"
+      subtitle="Set the basics before you invite friends or add your first split."
+      onBack={() => router.back()}
+    >
+      <View style={styles.form}>
         <View style={styles.stepBadge}>
           <AppText role="micro" tone="accent">
             step 1 of 2
           </AppText>
         </View>
-        <AppText role="title1">Complete your profile</AppText>
-        <AppText tone="secondary">
-          Set the basics before you invite friends or add your first split.
-        </AppText>
-      </View>
-
-      <AppCard style={styles.form}>
-        <TextField
-          label="Full Name"
+        <AuthField
+          icon="person"
+          label="Full name"
           placeholder="Jane Doe"
           value={fullName}
           onChangeText={setFullName}
         />
-        <TextField
-          label="Default Currency"
+        <AuthField
+          icon="creditcard"
+          label="Default currency"
           placeholder="USD"
           value={currency}
           onChangeText={(value) => setCurrency(value.toUpperCase())}
@@ -102,22 +100,14 @@ export default function ProfileSetupScreen() {
           disabled={isLoading}
           style={styles.submitBtn}
         />
-      </AppCard>
-    </AppScreen>
+      </View>
+    </AuthFormScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    paddingTop: theme.spacing[12],
-  },
-  header: {
-    alignItems: "flex-start",
-    gap: theme.spacing[2],
-    marginBottom: theme.spacing[8],
-  },
   stepBadge: {
+    alignSelf: "flex-start",
     backgroundColor: theme.colors.accentSoft,
     borderRadius: theme.radii.full,
     paddingHorizontal: theme.spacing[3],

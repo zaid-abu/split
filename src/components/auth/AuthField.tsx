@@ -9,9 +9,18 @@ interface AuthFieldProps extends TextInputProps {
   icon: SymbolViewProps["name"];
   error?: string;
   isPassword?: boolean;
+  label: string;
 }
 
-export function AuthField({ icon, error, isPassword = false, secureTextEntry, style, ...props }: AuthFieldProps) {
+export function AuthField({
+  icon,
+  error,
+  isPassword = false,
+  secureTextEntry,
+  style,
+  label,
+  ...props
+}: AuthFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
   const shouldHideText = isPassword ? isPasswordHidden : secureTextEntry;
@@ -21,6 +30,8 @@ export function AuthField({ icon, error, isPassword = false, secureTextEntry, st
       <View style={[styles.field, isFocused && styles.fieldFocused, !!error && styles.fieldError]}>
         <SymbolView name={icon} size={22} tintColor={theme.colors.textSecondary} />
         <TextInput
+          accessibilityLabel={label}
+          accessibilityHint={error ? error : undefined}
           placeholderTextColor={theme.colors.textSecondary}
           secureTextEntry={shouldHideText}
           onFocus={(event) => {
@@ -72,7 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: theme.spacing[3],
     minHeight: 64,
-    paddingHorizontal: theme.spacing[5],
+    paddingHorizontal: theme.spacing[4],
   },
   fieldFocused: {
     borderColor: theme.colors.accent,

@@ -11,7 +11,9 @@ export default function AuthLayout() {
       }}
     >
       <Stack.Screen name="splash" />
+      <Stack.Screen name="welcome" />
       <Stack.Screen name="sign-in" />
+      <Stack.Screen name="register" />
       <Stack.Screen name="verify" />
       <Stack.Screen name="profile-setup" />
       <Stack.Screen name="permissions" />

@@ -1,32 +1,41 @@
 # Architecture
 
+## System Overview
+
+Split is an Expo Router application backed by Supabase. The app should be structured so screens compose UI and domain state, services own Supabase access, and pure helpers own financial calculations. Production behavior depends on clear boundaries: presentation components should not know about Supabase tables, and Supabase services should not know about visual layout.
+
+Expo SDK 57 docs are the authority for Expo APIs:
+
+```txt
+https://docs.expo.dev/versions/v57.0.0/
+```
+
+Read the versioned docs before changing Expo-specific implementation.
+
 ## Stack
 
 | Layer | Tool | Purpose |
 | --- | --- | --- |
-| App framework | Expo SDK 57 | iOS, Android, and web app runtime |
-| Routing | Expo Router | File-based routing, tabs, stacks, modals, deep links |
-| UI runtime | React Native 0.86 + React 19 | Cross-platform UI |
+| App runtime | Expo SDK 57 | iOS, Android, and web runtime |
+| Routing | Expo Router | File-based routes, stacks, tabs, modals, deep links |
+| UI | React Native 0.86 + React 19 | Cross-platform screens and components |
+| Language | TypeScript strict | Type safety and explicit domain contracts |
 | Backend | Supabase | Auth, Postgres, Storage, Edge Functions, Realtime |
-| Auth | Supabase Auth | Email, phone OTP, Google, Apple |
-| Database | Supabase Postgres | Source of truth for users, groups, expenses, balances |
-| Storage | Supabase Storage | Avatars, group covers, receipt photos |
-| Realtime | Supabase Realtime | Activity, group, and balance updates |
-| Styling | React Native StyleSheet + tokens | Tokenized flat UI |
-| Images | `expo-image` | Avatars, covers, receipts |
-| Linking | `expo-linking` | Invite links and deep links |
+| Auth | Supabase Auth | Email/password, phone OTP, OAuth when wired |
+| Database | Supabase Postgres | Source of truth for ledger and social data |
+| Storage | Supabase Storage | Avatars, group covers, receipts, exports |
+| Realtime | Supabase Realtime | Active feeds, notifications, balance refresh prompts |
+| Styling | React Native StyleSheet + tokens | Stable tokenized visual system |
+| Images | `expo-image` | Avatars, covers, receipt previews |
+| Linking | `expo-linking` | Invites and app deep links |
 | Notifications | Expo Notifications | Reminders and activity notifications |
-| Camera/media | Expo Image Picker / Camera | Receipt attachment |
-| Charts | TBD | Analytics visualizations |
-| Language | TypeScript strict | App-wide type safety |
-
-Expo SDK 57 docs are the implementation authority for Expo APIs. Check `https://docs.expo.dev/versions/v57.0.0/` before writing Expo-specific code.
-
----
+| Contacts | Expo Contacts | Optional contact import |
+| Media | Expo Image Picker / Camera | Avatars, covers, receipts |
+| Charts | TBD | Analytics after library selection |
 
 ## Folder Structure
 
-```
+```txt
 /
 ├── AGENTS.md
 ├── context/
@@ -38,71 +47,16 @@ Expo SDK 57 docs are the implementation authority for Expo APIs. Check `https://
 │   ├── code-standards.md
 │   ├── library-docs.md
 │   ├── build-plan.md
-│   └── progress-tracker.md
+│   ├── progress-tracker.md
+│   └── designs/
 ├── src/
 │   ├── app/
-│   │   ├── _layout.tsx
-│   │   ├── +not-found.tsx
-│   │   ├── (auth)/
-│   │   │   ├── _layout.tsx
-│   │   │   ├── splash.tsx
-│   │   │   ├── welcome.tsx
-│   │   │   ├── sign-in.tsx
-│   │   │   ├── verify.tsx
-│   │   │   ├── profile-setup.tsx
-│   │   │   └── permissions.tsx
-│   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx
-│   │   │   ├── home.tsx
-│   │   │   ├── friends.tsx
-│   │   │   ├── groups.tsx
-│   │   │   ├── activity.tsx
-│   │   │   └── account.tsx
-│   │   ├── friends/
-│   │   ├── groups/
-│   │   ├── expenses/
-│   │   ├── settle-up/
-│   │   ├── analytics/
-│   │   ├── search.tsx
-│   │   └── filters.tsx
 │   ├── components/
-│   │   ├── ui/
-│   │   ├── layout/
-│   │   ├── home/
-│   │   ├── friends/
-│   │   ├── groups/
-│   │   ├── expenses/
-│   │   ├── settlements/
-│   │   ├── activity/
-│   │   ├── analytics/
-│   │   └── account/
 │   ├── constants/
-│   │   ├── theme.ts
-│   │   ├── categories.ts
-│   │   └── currencies.ts
 │   ├── hooks/
 │   ├── lib/
-│   │   ├── supabase.ts
-│   │   ├── auth.ts
-│   │   ├── balances.ts
-│   │   ├── splitMath.ts
-│   │   ├── debtSimplification.ts
-│   │   ├── money.ts
-│   │   ├── dates.ts
-│   │   └── errors.ts
 │   ├── services/
-│   │   ├── profiles.ts
-│   │   ├── friends.ts
-│   │   ├── groups.ts
-│   │   ├── expenses.ts
-│   │   ├── settlements.ts
-│   │   ├── activity.ts
-│   │   ├── notifications.ts
-│   │   └── analytics.ts
 │   └── types/
-│       ├── database.ts
-│       ├── domain.ts
-│       └── navigation.ts
 ├── supabase/
 │   ├── migrations/
 │   ├── functions/
@@ -113,74 +67,95 @@ Expo SDK 57 docs are the implementation authority for Expo APIs. Check `https://
 └── tsconfig.json
 ```
 
----
+## App Boundary Rules
 
-## System Boundaries
-
-| Area | Owns |
-| --- | --- |
-| `src/app/` | Route files, screen composition, navigation options |
-| `src/components/` | Reusable UI only, no direct Supabase writes |
-| `src/services/` | Supabase queries and mutations by domain |
-| `src/lib/` | Shared clients, pure calculations, formatting, error helpers |
-| `src/constants/` | Tokens, categories, currencies, fixed option sets |
-| `src/hooks/` | UI-facing state composition and subscriptions |
-| `src/types/` | Shared TypeScript types |
-| `supabase/` | Migrations, policies, Edge Functions, seed data |
-
----
+| Area | Owns | Must Not Own |
+| --- | --- | --- |
+| `src/app/` | Route files, screen composition, navigation options, screen-level state | Raw Supabase queries in JSX, complex financial math |
+| `src/components/` | Reusable presentational UI, local interaction states | Domain mutations, table names, service role logic |
+| `src/hooks/` | Screen-facing state composition, subscriptions, loading/error orchestration | Unscoped Supabase calls, hidden global mutation side effects |
+| `src/services/` | Supabase domain reads/writes, RLS-scoped queries, mutation payload validation | UI styling, React Native components |
+| `src/lib/` | Pure helpers, Supabase client, money logic, dates, errors, debt simplification | React component rendering |
+| `src/constants/` | Theme, categories, currencies, routes, fixed option sets | Runtime backend access |
+| `src/types/` | Database and domain types | Business logic |
+| `supabase/` | Migrations, RLS, functions, seed data | Client UI code |
 
 ## Data Flow
 
-### Read Flow
+Read flow:
 
-```
-Screen
-  ↓
-Domain hook or service
-  ↓
-Supabase query
-  ↓
-Typed domain model
-  ↓
-Tokenized UI component
+```txt
+Screen route
+  -> domain hook or service
+  -> Supabase query with explicit scope
+  -> typed domain model
+  -> reusable UI component
+  -> loading/empty/error/offline/success state
 ```
 
-### Mutation Flow
+Mutation flow:
 
-```
+```txt
 User action
-  ↓
-Validate input locally
-  ↓
-Service mutation or Edge Function
-  ↓
-Postgres write in transaction where needed
-  ↓
-Activity row + notification rows
-  ↓
-Realtime update or query refresh
+  -> local validation
+  -> service mutation or Edge Function
+  -> Postgres transaction where needed
+  -> activity and notification rows
+  -> Realtime event or refetch
+  -> user-visible saved/queued/failed state
 ```
 
-### Expense Balance Flow
+Expense balance flow:
 
-```
-Expense
-  ↓
-Expense participants and split rows
-  ↓
-Ledger entries
-  ↓
-Friend/group balance view
-  ↓
-Dashboard, analytics, settle-up suggestions
+```txt
+expenses
+  -> expense_splits
+  -> settlements
+  -> ledger entries
+  -> friend/group net balances
+  -> dashboard, analytics, simplify debts
 ```
 
-Balances must be derivable from ledger data. Cached totals are allowed only if they can be rebuilt.
+Cached totals may exist for performance only if they can be rebuilt from ledger source data.
 
----
+## Route Architecture
 
-## Supabase Database Schema
+Auth routes:
+
+```txt
+src/app/(auth)/_layout.tsx
+src/app/(auth)/splash.tsx
+src/app/(auth)/welcome.tsx
+src/app/(auth)/sign-in.tsx
+src/app/(auth)/register.tsx
+src/app/(auth)/verify.tsx
+src/app/(auth)/profile-setup.tsx
+src/app/(auth)/permissions.tsx
+```
+
+Authenticated tabs:
+
+```txt
+src/app/(tabs)/_layout.tsx
+src/app/(tabs)/home.tsx
+src/app/(tabs)/friends.tsx
+src/app/(tabs)/groups.tsx
+src/app/(tabs)/activity.tsx
+src/app/(tabs)/account.tsx
+```
+
+Stack routes should sit outside tabs for details and full-screen flows. Modal-like routes should use Expo Router presentation options when appropriate.
+
+Routing rules:
+
+- Root layout owns fonts, splash handling, app providers, session bootstrap, and global error boundaries.
+- Auth layout owns unauthenticated stack screens.
+- Tabs layout owns only bottom navigation.
+- Detail screens validate route params and resource access.
+- Missing or inaccessible resources render a not-found state, not a crash.
+- Deep links for invites must validate server-side before opening group or friend detail.
+
+## Supabase Data Model
 
 ### `profiles`
 
@@ -189,25 +164,31 @@ Balances must be derivable from ledger data. Cached totals are allowed only if t
 | id | uuid | References `auth.users` |
 | username | text | Unique, searchable |
 | full_name | text | Required after setup |
-| avatar_url | text | Supabase Storage URL |
+| avatar_url | text | Storage path or signed/public URL |
 | phone | text | Optional |
 | email | text | From auth |
 | default_currency | text | ISO 4217, default `USD` |
-| locale | text | Default from device |
+| locale | text | Device or user preference |
 | onboarding_completed | boolean | Controls auth flow |
-| created_at | timestamptz |  |
-| updated_at | timestamptz |  |
+| created_at | timestamptz | Server generated |
+| updated_at | timestamptz | Server generated |
 
 ### `friendships`
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | uuid | Primary key |
-| requester_id | uuid | User who sent request |
-| addressee_id | uuid | User who receives request |
+| requester_id | uuid | Sender |
+| addressee_id | uuid | Receiver |
 | status | text | pending / accepted / blocked |
 | created_at | timestamptz |  |
 | updated_at | timestamptz |  |
+
+Constraints:
+
+- A pair can have only one active friendship relationship.
+- Users cannot create friendships with themselves.
+- RLS must restrict visibility to involved users.
 
 ### `groups`
 
@@ -216,8 +197,8 @@ Balances must be derivable from ledger data. Cached totals are allowed only if t
 | id | uuid | Primary key |
 | name | text | Required |
 | type | text | trip / home / couple / event / other |
-| icon | text | Emoji or icon key |
-| cover_url | text | Storage URL |
+| icon | text | Emoji or app icon key |
+| cover_url | text | Storage path or URL |
 | default_currency | text | ISO 4217 |
 | created_by | uuid | References profiles |
 | archived_at | timestamptz | Null when active |
@@ -235,26 +216,34 @@ Balances must be derivable from ledger data. Cached totals are allowed only if t
 | status | text | invited / active / removed / left |
 | joined_at | timestamptz |  |
 
+Rules:
+
+- Every active group needs at least one admin.
+- Removed or left users keep historical expense references.
+- Membership controls group read/write RLS.
+
 ### `expenses`
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | uuid | Primary key |
-| group_id | uuid | Nullable for one-to-one friend expenses |
+| group_id | uuid | Nullable for one-to-one expenses |
 | created_by | uuid | References profiles |
 | paid_by | uuid | References profiles |
 | title | text | Required |
-| amount | numeric | Original amount |
+| amount_minor | integer | Minor units for exact arithmetic |
 | currency | text | ISO 4217 |
 | category | text | Category key |
 | expense_date | date | User-selected date |
 | notes | text | Optional |
-| receipt_url | text | Storage URL |
+| receipt_url | text | Storage path or URL |
 | split_method | text | equal / percentage / shares / exact / adjustment |
 | version | integer | Optimistic conflict detection |
 | deleted_at | timestamptz | Soft delete |
 | created_at | timestamptz |  |
 | updated_at | timestamptz |  |
+
+Use `amount_minor` for durable calculations. If an existing migration uses numeric amounts, client helpers must normalize to deterministic minor-unit math before split calculations.
 
 ### `expense_splits`
 
@@ -262,109 +251,128 @@ Balances must be derivable from ledger data. Cached totals are allowed only if t
 | --- | --- | --- |
 | id | uuid | Primary key |
 | expense_id | uuid | References expenses |
-| user_id | uuid | Participant |
-| owed_amount | numeric | Amount owed in expense currency |
-| percentage | numeric | Nullable |
-| shares | numeric | Nullable |
-| adjustment_amount | numeric | Nullable |
+| user_id | uuid | References profiles |
+| amount_minor | integer | Owed amount in expense currency |
+| currency | text | ISO 4217, same as expense unless explicit conversion added |
+| share_value | numeric | Optional method-specific input |
+| created_at | timestamptz |  |
+
+Rules:
+
+- Split rows must sum exactly to the expense total in minor units.
+- Participants remain visible even if they later leave a group.
 
 ### `settlements`
 
 | Column | Type | Notes |
 | --- | --- | --- |
 | id | uuid | Primary key |
-| group_id | uuid | Nullable |
-| payer_id | uuid | User sending money |
-| receiver_id | uuid | User receiving money |
-| amount | numeric | Settlement amount |
+| group_id | uuid | Nullable for friend settlement |
+| payer_id | uuid | User who paid |
+| receiver_id | uuid | User who received |
+| amount_minor | integer | Minor units |
 | currency | text | ISO 4217 |
-| method | text | cash / bank / upi / stripe / paypal / venmo / other |
-| status | text | recorded / processing / completed / failed |
+| method | text | cash / bank / card / other / recorded |
 | note | text | Optional |
-| settled_at | timestamptz |  |
+| created_by | uuid | References profiles |
 | created_at | timestamptz |  |
 
-### `activity`
+### Supporting Tables
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| id | uuid | Primary key |
-| actor_id | uuid | User who caused the event |
-| group_id | uuid | Nullable |
-| expense_id | uuid | Nullable |
-| settlement_id | uuid | Nullable |
-| type | text | expense_added / expense_edited / settled / comment_added / invite_sent / etc. |
-| metadata | jsonb | Display payload |
-| created_at | timestamptz |  |
+Use these when phases require them:
 
-### `comments`
+- `activity_items`: audit feed for expense, settlement, group, friend, invite, and comment changes.
+- `notifications`: durable in-app notification records independent of push delivery.
+- `expense_comments`: comments on expenses.
+- `recurring_expenses`: recurring templates, schedule metadata, next run date.
+- `attachments`: optional generalized file metadata for receipts, avatars, covers, and exports.
+- `invite_tokens`: group/friend invite links with expiry and usage state.
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| id | uuid | Primary key |
-| expense_id | uuid | References expenses |
-| author_id | uuid | References profiles |
-| body | text | Required |
-| created_at | timestamptz |  |
-| updated_at | timestamptz |  |
+## RLS and Security
 
-### `notifications`
+Security rules:
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| id | uuid | Primary key |
-| user_id | uuid | Recipient |
-| type | text | reminder / friend_request / payment / invite / activity |
-| title | text | Display title |
-| body | text | Display body |
-| metadata | jsonb | Navigation payload |
-| read_at | timestamptz | Null if unread |
-| created_at | timestamptz |  |
+- Never ship Supabase service role keys in the Expo app.
+- All client queries must rely on RLS and include explicit user, friend, or group scope.
+- Privileged writes, multi-table transactions, notification fan-out, and payment webhooks belong in Edge Functions.
+- Storage paths must be scoped by user, group, or expense.
+- Signed URLs should be used for private files.
+- Raw Supabase error details should be logged for developers but translated for users.
 
-### `recurring_expenses`
+Minimum RLS expectations:
 
-| Column | Type | Notes |
-| --- | --- | --- |
-| id | uuid | Primary key |
-| group_id | uuid | Nullable |
-| created_by | uuid | Owner |
-| template | jsonb | Expense defaults and split settings |
-| frequency | text | weekly / monthly / yearly / custom |
-| next_run_at | timestamptz |  |
-| active | boolean |  |
+- Profiles: user can read limited public profile fields for friends/group members; user can update only self.
+- Friendships: only requester/addressee can read or change relevant rows.
+- Groups: only active members can read; only admins can update destructive settings.
+- Expenses/splits/settlements: only involved users or active group members can read; writes require membership and validation.
+- Activity/notifications: only relevant users can read.
 
----
+## Realtime Strategy
 
-## Storage Buckets
+Use Realtime only where live updates improve the visible screen:
 
-| Bucket | Path | Contents |
-| --- | --- | --- |
-| `avatars` | `{user_id}/avatar.{ext}` | Profile photos |
-| `group-covers` | `{group_id}/cover.{ext}` | Group cover images |
-| `receipts` | `{expense_id}/{file_id}.{ext}` | Receipt photos |
-| `exports` | `{user_id}/{export_id}.{ext}` | CSV/PDF exports |
+- Active group detail expense feed.
+- Active activity feed.
+- Notification badge count.
+- Possibly friend detail when settling or editing.
 
-Access must be scoped by RLS policies and signed URLs where appropriate.
+Rules:
 
----
+- Subscribe only while the screen is focused.
+- Unsubscribe during cleanup.
+- Realtime events should prompt local cache update or refetch.
+- Reconnect should trigger a refetch because Realtime is not the source of truth.
 
-## Authentication
+## Offline and Sync Strategy
 
-- Provider: Supabase Auth.
-- Methods: email, phone OTP, Google OAuth, Apple OAuth.
-- Auth state is initialized in the root layout.
-- Protected groups: all tabs and domain detail routes.
-- Public groups: splash, welcome, sign-in, verify.
-- On first login, route to profile setup until `onboarding_completed = true`.
+The production target should support offline-aware states even before full offline mutation persistence is built.
 
----
+Required behavior:
 
-## Invariants
+- Show when data may be stale.
+- Disable actions that cannot be safely queued.
+- For queueable mutations, show queued, syncing, synced, and failed states.
+- Never pretend a mutation succeeded before the app can reconcile it.
+- Reconcile conflicts on editable financial records by comparing `version` or updated timestamps.
 
-- Every Supabase read/write is scoped to the current user through RLS and query filters.
-- Money is stored as numeric values with explicit currency. Never infer currency from locale.
-- Balance views are derived from expenses, splits, and settlements.
-- Mutations that affect multiple tables use a transaction or Supabase Edge Function.
-- Expense edits increment `version` for conflict detection.
-- Soft delete expenses and groups where historical balances depend on them.
-- UI must show loading, empty, error, offline, and conflict states for production workflows.
+## Error Taxonomy
+
+Use consistent error categories:
+
+- `validation`: user input is incomplete or invalid.
+- `auth`: session expired or user lacks permission.
+- `network`: request failed or device appears offline.
+- `not_found`: resource deleted, expired, or inaccessible.
+- `conflict`: stale version or concurrent edit.
+- `server`: unexpected backend failure.
+
+Services should convert raw backend failures into typed errors. Screens should convert typed errors into human-readable UI.
+
+## Performance Expectations
+
+- Lists should render with stable keys and virtualized components when large.
+- Dashboard queries should be compact and scoped to visible summaries.
+- Receipt and avatar images should use stable dimensions to avoid layout shift.
+- Expensive financial calculations should be pure and memoizable.
+- Avoid large base64 image payloads in component state.
+
+## Testing Expectations
+
+Minimum coverage by layer:
+
+- `src/lib/money.ts`: parse, format, rounding, minor unit conversion.
+- `src/lib/splitMath.ts`: all split methods and remainder handling.
+- `src/lib/debtSimplification.ts`: deterministic suggestions, multi-currency guard.
+- `src/services/*`: payload validation and typed error mapping where practical.
+- Screens: smoke coverage or manual QA for loading, empty, error, offline, and success states.
+
+## Production Release Gates
+
+Before considering a phase complete:
+
+- `npm run lint` passes.
+- TypeScript checks pass if configured.
+- Financial helper tests pass when touched.
+- No new dependency is added without documenting it in `code-standards.md` and `library-docs.md`.
+- `ui-registry.md` is updated for reusable UI.
+- `progress-tracker.md` is updated for completed feature work.

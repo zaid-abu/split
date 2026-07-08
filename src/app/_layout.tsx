@@ -10,6 +10,7 @@ import { AppScreen } from "@/components/ui/AppScreen";
 import { AppCard } from "@/components/ui/AppCard";
 import { AppText } from "@/components/ui/AppText";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { routes } from "@/constants/routes";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -28,17 +29,24 @@ function RootLayoutNav() {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const authRoute = segments[1];
 
-    if (!session && !inAuthGroup) {
-      router.replace("/(auth)/splash");
-    } else if (session) {
-      if (profile && !profile.onboarding_completed) {
-        if (segments[1] !== "profile-setup" && segments[1] !== "permissions") {
-          router.replace("/(auth)/profile-setup");
-        }
-      } else if (profile?.onboarding_completed && inAuthGroup) {
-        router.replace("/(tabs)/home" as any);
+    if (!session) {
+      if (!inAuthGroup || authRoute === "splash") {
+        router.replace(routes.auth.welcome);
       }
+      return;
+    }
+
+    if (!profile || !profile.onboarding_completed) {
+      if (authRoute !== "profile-setup" && authRoute !== "permissions") {
+        router.replace(routes.auth.profileSetup);
+      }
+      return;
+    }
+
+    if (inAuthGroup) {
+      router.replace(routes.tabs.home);
     }
   }, [session, profile, isLoading, segments, router]);
 

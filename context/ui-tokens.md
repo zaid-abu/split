@@ -1,37 +1,17 @@
 # UI Tokens
 
-Design tokens for Split. Use these values through `src/constants/theme.ts` and shared UI primitives. Do not hardcode colors, radii, shadows, or spacing inside screens.
+Split uses a tokenized React Native design system. All screen and component styles must use `src/constants/theme.ts` values for colors, spacing, radii, typography, and shadows. Do not hardcode raw hex values, spacing numbers, radii, or shadow definitions inside screen components.
 
-The design direction is a vibrant flat UI: solid surface cards, crisp borders, gentle depth via drop shadows, and clear financial color semantics.
+The visual target comes from:
 
----
+- `context/designs/Auth Flow.png`
+- `context/designs/image.png`
 
-## How to Use
+The design language is friendly, rounded, high-contrast, and finance-focused: white surfaces, deep indigo primary actions, soft lavender and sky panels, compact icons, avatar-led social rows, and subtle depth.
 
-```tsx
-import { StyleSheet } from "react-native";
-import { theme } from "@/constants/theme";
+## Canonical Theme
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.radii["2xl"],
-    padding: theme.spacing[4],
-    ...theme.shadows.md,
-  },
-});
-```
-
-Rules:
-
-- Use `theme` tokens in React Native styles.
-- Use semantic tokens like `positive`, `negative`, `warning`, and `accent`.
-- Never use raw hex values directly in components.
-- Do not use translucency or blur.
-
----
-
-## `src/constants/theme.ts`
+`src/constants/theme.ts` should remain the implementation authority. The following shape is the expected baseline:
 
 ```ts
 export const theme = {
@@ -140,58 +120,98 @@ export const theme = {
 } as const;
 ```
 
----
+## Color Semantics
 
-## Color Usage
+| Use | Token | Notes |
+| --- | --- | --- |
+| App background | `background` | Pale neutral gray from the design references |
+| Primary surfaces | `surface`, `surfaceElevated` | Cards, sheets, list sections |
+| Muted surfaces | `surfaceMuted` | Secondary buttons, skeletons, neutral states |
+| Blue tint | `surfaceTintBlue` | Bill cards, informational modules |
+| Purple tint | `surfaceTintPurple`, `accentSoft` | Selection backgrounds, avatar shells, onboarding accents |
+| Primary text | `textPrimary` | Main labels and amounts |
+| Secondary text | `textSecondary` | Subtitles, form placeholders |
+| Muted text | `textMuted` | Metadata, inactive nav, disabled copy |
+| Primary action | `accent` | Buttons, active tabs, central action |
+| Pressed primary | `accentPressed` | Pressed button state, strongest indigo |
+| Positive money | `positive` | Owed to user, received, settled success |
+| Negative money | `negative` | User owes, destructive actions |
+| Warning | `warning` | Pending, conflicts, queued sync |
+| Info | `info` | Permission education and neutral notices |
+| Border | `border`, `borderStrong` | Input and card separators |
+| Overlay | `overlay`, `scrim` | Modals and bottom sheets |
 
-| Use | Token |
-| --- | --- |
-| App background | `background` |
-| Main cards | `surface`, `surfaceElevated` |
-| Tinted cards | `surfaceTintBlue`, `surfaceTintPurple` |
-| Primary text | `textPrimary` |
-| Secondary text | `textSecondary` |
-| Placeholder or metadata | `textMuted` |
-| Primary action | `accent` |
-| Owed to user / positive balance | `positive` |
-| User owes / negative balance | `negative` |
-| Pending, warning, sync conflict | `warning` |
-| Informational states | `info` |
+Use red only for destructive actions or money the user owes. Use green only for positive balances, money owed to the user, or successful settlement states.
 
----
+## Typography
 
-## Typography Usage
+| Element | Token | Usage |
+| --- | --- | --- |
+| Dashboard net balance | `display` | Only for major balance heroes |
+| Screen title | `title1` | Top-level screen heading |
+| Secondary screen title | `title2` | Detail headers and large section titles |
+| Section title | `title3` | Cards, list groups, form sections |
+| Row title | `body` | Friend, group, expense, activity rows |
+| Body text | `bodyRegular` | Explanatory and paragraph text |
+| Field label | `callout` | Form labels and button-adjacent metadata |
+| Metadata | `caption` | Dates, currencies, statuses |
+| Badge | `micro` | Pills, counters, compact state labels |
 
-| Element | Token |
-| --- | --- |
-| Balance hero amount | `display` |
-| Screen title | `title1` |
-| Section title | `title3` |
-| Body text | `bodyRegular` |
-| Row title | `body` |
-| Form label | `callout` |
-| Metadata | `caption` |
-| Badge text | `micro` |
+Rules:
 
-Use Inter through `expo-font`. Do not scale font size with viewport width.
-
----
+- Use Inter through `expo-font`.
+- Do not use negative letter spacing.
+- Do not scale font size based on viewport width.
+- Text must fit at 320px width without overlapping adjacent controls.
+- Large display type belongs only in balance heroes or major onboarding moments.
 
 ## Spacing
 
 | Token | Value | Usage |
 | --- | --- | --- |
-| `spacing[1]` | 4 | Tight icon/text gap |
-| `spacing[2]` | 8 | Chips, small row gaps |
-| `spacing[3]` | 12 | Form field internal gaps |
-| `spacing[4]` | 16 | Default screen and card padding |
+| `spacing[1]` | 4 | Tight icon/text gaps |
+| `spacing[2]` | 8 | Chips, compact row gaps |
+| `spacing[3]` | 12 | Input internals, row spacing |
+| `spacing[4]` | 16 | Default screen padding and card padding |
 | `spacing[5]` | 20 | Section gaps |
 | `spacing[6]` | 24 | Major screen blocks |
-| `spacing[8]` | 32 | Hero and modal spacing |
+| `spacing[8]` | 32 | Hero spacing, modal rhythm |
+| `spacing[10]` | 40 | Large vertical separation |
+| `spacing[12]` | 48 | First-screen hero spacing |
 
----
+Mobile layout rules:
 
-## Component Tokens
+- Default horizontal screen padding is `spacing[4]`.
+- Use `spacing[5]` between major sections.
+- Keep bottom actions reachable and safe-area aware.
+- Fixed controls such as icon buttons and tab items need stable dimensions.
+
+## Radii
+
+| Token | Usage |
+| --- | --- |
+| `xs` | Tiny badges or internal image corners |
+| `sm` | Compact chips |
+| `md` | Form fields |
+| `lg` | Auth fields and small cards |
+| `xl` | Cards and bottom sheets |
+| `2xl` | Primary app cards and dashboard modules |
+| `3xl` | Large onboarding panels |
+| `full` | Pills, avatars, circular icon buttons |
+
+The references use strong rounding. Keep app cards rounded, but do not nest rounded cards inside rounded cards.
+
+## Shadows and Depth
+
+Use shadows sparingly:
+
+- `sm`: rows, small floating controls, subtle buttons.
+- `md`: standard cards and auth visual panels.
+- `lg`: major hero cards, bottom sheets, floating central action.
+
+Do not use blur, translucent glass, decorative orbs, or busy dark overlays. Depth should come from solid surfaces, shadows, spacing, and clear hierarchy.
+
+## Component Recipes
 
 ### App Card
 
@@ -204,34 +224,67 @@ Use Inter through `expo-font`. Do not scale font size with viewport width.
 }
 ```
 
-### Button
-
-| Variant | Background | Text | Border |
-| --- | --- | --- | --- |
-| Primary | `accent` | `textInverse` | none |
-| Secondary | `surfaceMuted` | `textPrimary` | none |
-| Positive | `positive` | `textInverse` | none |
-| Danger | `negative` | `textInverse` | none |
-| Ghost | transparent | `textPrimary` | none |
-
-### Balance Indicators
-
-| State | Token |
-| --- | --- |
-| You are owed | `positive`, `positiveSoft` |
-| You owe | `negative`, `negativeSoft` |
-| Settled | `textMuted`, `surfaceMuted` |
-| Pending payment | `warning`, `warningSoft` |
-
-### Inputs
+### Primary Button
 
 ```ts
 {
+  minHeight: 56,
+  borderRadius: theme.radii.lg,
+  backgroundColor: theme.colors.accent,
+  paddingHorizontal: theme.spacing[5],
+}
+```
+
+### Secondary Button
+
+```ts
+{
+  minHeight: 48,
+  borderRadius: theme.radii.lg,
   backgroundColor: theme.colors.surface,
   borderColor: theme.colors.border,
   borderWidth: StyleSheet.hairlineWidth,
-  borderRadius: theme.radii.md,
-  minHeight: 48,
+}
+```
+
+### Input
+
+```ts
+{
+  minHeight: 56,
+  borderRadius: theme.radii.lg,
+  borderColor: theme.colors.borderStrong,
+  borderWidth: StyleSheet.hairlineWidth,
+  backgroundColor: theme.colors.surface,
   paddingHorizontal: theme.spacing[4],
 }
 ```
+
+### Balance Pill
+
+Use:
+
+- Positive: `positive` foreground with `positiveSoft` background.
+- Negative: `negative` foreground with `negativeSoft` background.
+- Settled: `textMuted` foreground with `surfaceMuted` background.
+- Pending: `warning` foreground with `warningSoft` background.
+
+## Design Asset Usage
+
+Use `context/designs/Auth Flow.png` for:
+
+- Welcome, sign-in, register, verification, profile setup, and permissions visual rhythm.
+- Auth top bars with a back affordance and small avatar decoration.
+- Icon-led fields with generous height and rounded borders.
+- Deep indigo full-width CTA buttons.
+- Social sign-in placeholders only when backend support is not wired.
+
+Use `context/designs/image.png` for:
+
+- Dashboard card density and hierarchy.
+- Friend avatars and sharing sections.
+- Balance or wallet summary layouts adapted to Split balances.
+- Chart and transaction preview structure for analytics.
+- Bottom tab icon style and central action emphasis.
+
+Do not copy wallet-specific product semantics blindly. Replace top-up, exchange, and withdraw behaviors with Split actions such as add expense, settle up, create group, add friend, and export.

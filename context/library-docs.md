@@ -1,58 +1,61 @@
 # Library Docs
 
-Project-specific usage patterns for third party libraries in Split. Check this file before touching any listed library.
+This file records project-specific library usage rules for Split. For official behavior, check the current official docs first. For Expo APIs, use the exact SDK 57 docs.
 
----
+Authority order:
 
-## Authority Order
-
-For library behavior:
-
+```txt
+Official current docs
+-> Expo SDK 57 docs for Expo APIs
+-> this file
+-> existing code
 ```
-Official current docs → Expo SDK 57 docs → This file → Existing code
+
+Expo SDK 57 docs:
+
+```txt
+https://docs.expo.dev/versions/v57.0.0/
 ```
 
-For Expo APIs, read the exact versioned docs first:
-
-`https://docs.expo.dev/versions/v57.0.0/`
-
----
-
-## Expo SDK 57
-
-Expo SDK 57 is the project baseline.
+## Confirmed Local Baseline
 
 Confirmed package baseline from the local project:
 
 - `expo` `~57.0.4`
+- `expo-router` `~57.0.4`
 - `react-native` `0.86.0`
 - `react` `19.2.3`
-- `expo-router` `~57.0.4`
 - `expo-image` `~57.0.0`
 
-Rules:
+Before adding or changing library usage:
 
-- Check Expo v57 docs before using or changing Expo APIs.
+- Confirm SDK 57 compatibility.
 - Prefer Expo modules over unmanaged native packages.
-- Do not add config plugins unless required by the selected Expo module.
-- Keep app config changes in `app.json` or `app.config.ts`.
-
----
+- Avoid config plugins unless required by the selected Expo module.
+- Update `code-standards.md` if a new dependency is approved.
 
 ## Expo Router
 
-Routes live in `src/app`.
+Use for:
+
+- File-based routing.
+- Auth and tabs route groups.
+- Stack navigation.
+- Modal routes.
+- Deep link destinations.
 
 Recommended structure:
 
 ```txt
 src/app/
   _layout.tsx
+  +not-found.tsx
   (auth)/
     _layout.tsx
     splash.tsx
     welcome.tsx
     sign-in.tsx
+    register.tsx
     verify.tsx
     profile-setup.tsx
     permissions.tsx
@@ -63,76 +66,82 @@ src/app/
     groups.tsx
     activity.tsx
     account.tsx
-  friends/[id].tsx
-  groups/[id].tsx
-  expenses/new.tsx
-  expenses/[id].tsx
+  friends/
+  groups/
+  expenses/
+  settle-up/
+  analytics/
+  search.tsx
+  filters.tsx
 ```
 
 Rules:
 
-- Root layout initializes providers and global app concerns.
-- Auth layout owns unauthenticated stack presentation.
+- Root layout initializes providers and global concerns.
+- Auth layout owns unauthenticated presentation.
 - Tabs layout owns bottom navigation only.
-- Use route params for resource IDs.
-- Validate IDs and show not-found states when resources do not exist or are inaccessible.
-
----
+- Use stack routes for creation, details, and settings.
+- Use modal presentation for filters, pickers, and confirmations when appropriate.
+- Route params must be validated before use.
+- Render not-found or no-access states instead of crashing.
 
 ## Supabase
 
-Add `@supabase/supabase-js` before wiring backend features.
+Add or use `@supabase/supabase-js` for:
 
-### Client Setup
+- Auth.
+- Postgres reads and writes.
+- Storage signed/public URLs.
+- Realtime channels.
+- Edge Function invocation.
 
-```ts
-import { createClient } from "@supabase/supabase-js";
-
-export const supabase = createClient(
-  process.env.EXPO_PUBLIC_SUPABASE_URL!,
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!,
-);
-```
+Client setup belongs in `src/lib/supabase.ts`.
 
 Rules:
 
-- The anon key is public and must be protected by RLS.
+- Use `EXPO_PUBLIC_SUPABASE_URL`.
+- Use `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+- The anon key is public and protected by RLS.
 - Never ship service role keys in Expo.
-- Put domain queries in `src/services`, not in screens.
-- Validate mutation payloads before sending them.
-- Use Edge Functions for privileged operations and multi-table transactions.
+- Do not call Supabase directly from presentational components.
+- Put domain queries and mutations in `src/services`.
+- Validate mutation payloads before sending.
+- Convert raw backend errors into typed app errors.
 
-### Auth
+### Supabase Auth
 
-Supported methods:
+Supported product paths:
 
-- Email/password or email magic link.
-- Phone OTP.
-- Google OAuth.
-- Apple OAuth.
+- Email/password first.
+- Phone OTP when wired.
+- Google OAuth when wired.
+- Apple OAuth when wired.
 
 Rules:
 
 - Root provider listens to auth state changes.
-- Session bootstrap decides whether to show auth, onboarding, or tabs.
-- Store only safe session state on the client.
-- On logout, clear local UI state and navigate to sign-in.
+- Session bootstrap decides between auth, onboarding, permissions, and tabs.
+- Profile row creation must be idempotent.
+- Logout clears local UI state and navigates to sign-in.
+- Do not show OAuth or OTP as working unless backend and redirect handling are complete.
 
-### Realtime
+### Supabase Realtime
 
-Use Realtime for:
+Use for:
 
-- Group activity feed.
-- Expense changes inside active group detail.
-- Notifications badge count.
+- Group activity feed while visible.
+- Expense changes in active group detail.
+- Notification badge counts.
+- Possibly active friend detail.
 
 Rules:
 
-- Subscribe only on focused screens where realtime value is visible.
+- Subscribe only on focused screens.
 - Unsubscribe on cleanup.
-- Do not rely on Realtime as the only data source; refetch after reconnect.
+- Realtime is not the source of truth; refetch after reconnect.
+- Handle duplicate or out-of-order events defensively.
 
-### Storage
+### Supabase Storage
 
 Buckets:
 
@@ -143,14 +152,29 @@ Buckets:
 
 Rules:
 
-- Compress or resize images before upload if needed.
-- Use scoped paths from `architecture.md`.
-- Save resulting storage path or signed/public URL to the database.
-- Do not keep large base64 images in component state longer than necessary.
+- Use scoped paths.
+- Prefer signed URLs for private files.
+- Compress or resize images before upload when needed.
+- Show upload progress and retry state.
+- Save storage path or URL in database after successful upload.
+- Avoid keeping large base64 payloads in component state.
 
----
+### Supabase Edge Functions
 
+Use for:
 
+- Privileged operations.
+- Multi-table transactional writes when the client cannot guarantee atomicity.
+- Invite token validation and creation if sensitive.
+- Notification fan-out.
+- Payment webhooks if payments are added.
+- Scheduled recurring expense generation if implemented server-side.
+
+Rules:
+
+- Service role keys live only in Edge Function environment.
+- Functions should validate caller identity and permissions.
+- Return typed, user-safe error codes.
 
 ## `expo-image`
 
@@ -159,15 +183,15 @@ Use for:
 - User avatars.
 - Group covers.
 - Receipt previews.
+- Optional illustration assets.
 
 Rules:
 
-- Always provide placeholder/fallback UI.
-- Use stable aspect ratios for receipts and covers.
+- Always provide fallback UI.
+- Use stable width/height or aspect ratio.
 - Avoid layout shift while images load.
-- Do not use receipt images as dark or blurred decorative backgrounds when the user needs to inspect them.
-
----
+- Do not use receipt images as decorative dark/blurred backgrounds when the user needs to inspect them.
+- Avatar components need fallback initials.
 
 ## `expo-linking`
 
@@ -175,101 +199,149 @@ Use for:
 
 - Group invite links.
 - Friend invite links.
+- Web redirects.
 - Payment deep links if integrated later.
 
 Rules:
 
-- Validate invite tokens server-side.
-- Show expired, deleted, or invalid invite states.
+- Invite tokens must be validated server-side.
+- Show expired, invalid, already-used, no-access, and deleted-resource states.
 - Never assume a deep link target exists.
+- Use `EXPO_PUBLIC_APP_SCHEME` and `EXPO_PUBLIC_SITE_URL` for configured links.
 
----
+## Expo Notifications
 
-## Notifications
-
-Use Expo Notifications when the feature is added.
+Use when notification features are implemented.
 
 Notification categories:
 
 - Friend request.
 - Group invite.
-- Expense added or edited.
-- Settlement confirmation.
+- Expense added.
+- Expense edited.
+- Settlement recorded.
 - Reminder.
+- Comment mention or reply if comments are built.
 
 Rules:
 
-- Ask permission after onboarding, not on first launch.
+- Ask permission after onboarding or at a clear point of value.
 - Provide notification preferences in Account.
-- Store notification records in Supabase even if push delivery fails.
+- Store notification rows in Supabase even if push delivery fails.
 - Edge Functions should fan out remote notifications.
+- App UI must not depend only on push delivery.
 
----
+## Expo Contacts
 
-## Contacts
-
-Use Expo Contacts when contact import is added.
+Use when contact import is implemented.
 
 Rules:
 
-- Request permission only from the contact sync screen.
+- Request permission only from the contact import flow or permissions screen.
 - Explain why contacts are needed before the OS prompt.
 - Do not upload a full address book by default.
-- Prefer hashed or user-confirmed contact identifiers if backend matching is needed.
+- Prefer hashed or user-confirmed identifiers for matching.
+- Provide denied and limited/unavailable states.
 
----
+## Expo Image Picker and Camera
 
-## Camera and Media Picker
+Use for:
 
-Use Expo Image Picker for gallery selection and either Image Picker camera launch or Expo Camera for direct capture.
+- Avatar selection.
+- Group cover selection.
+- Receipt attachment.
 
 Rules:
 
-- Request permission at the point of use.
-- Support both receipt photo and avatar/group cover upload.
-- Show upload progress and retry.
-- Allow deleting or replacing receipt attachments.
+- Request permission at point of use.
+- Support replace and delete attachment.
+- Show upload progress.
+- Show retry on upload failure.
+- Avoid storing large base64 images in state.
+- Use Expo Camera only if direct capture is required; image picker camera launch may be enough.
 
----
+## Expo Secure Store
+
+Use only if selected for mobile auth persistence.
+
+Rules:
+
+- Confirm SDK 57 behavior before implementation.
+- Do not store service role secrets.
+- Store only session data appropriate for client persistence.
+- Have a web fallback if needed.
+
+## `expo-symbols`
+
+Use where available for familiar SF Symbol-style icons, especially:
+
+- Back.
+- Search.
+- Filter.
+- Add.
+- More.
+- Edit.
+- Trash.
+- Check.
+- Warning.
+- Home/tabs.
+
+Rules:
+
+- Icon-only controls need accessibility labels.
+- Icons should not be the only signal for financial state.
+- If another icon library is added later, document why and use it consistently.
+
+## Chart Library
+
+Analytics charts are planned but the chart library is intentionally TBD.
+
+Selection criteria:
+
+- Expo SDK 57 compatibility.
+- React Native and web behavior acceptable for development.
+- Accessible labels or ability to render labels.
+- Small enough bundle and maintenance risk.
+- Works for simple bar, line, donut/pie, and trend visuals.
+
+Do not add a chart dependency until analytics implementation begins and the choice is documented here.
 
 ## Money Helpers
 
-Implement money logic in `src/lib/money.ts` and `src/lib/splitMath.ts`.
+Implement in:
 
-Required helpers:
-
-- Format amount by currency and locale.
-- Parse amount input safely.
-- Split equally with deterministic remainder handling.
-- Split by exact amounts.
-- Split by percentages.
-- Split by shares.
-- Apply adjustments.
-- Validate split total equals expense amount.
+- `src/lib/money.ts`
+- `src/lib/splitMath.ts`
+- `src/lib/debtSimplification.ts`
 
 Rules:
 
-- Keep calculation functions pure.
+- Keep helpers pure.
+- Use minor units for durable calculations.
+- Support currency minor-unit differences.
 - Add tests for rounding and edge cases.
 - Never bury split math inside components.
 
----
+Required helper groups:
 
-## Debt Simplification
+- Parse and format money.
+- Split equally.
+- Split by exact amounts.
+- Split by percentages.
+- Split by shares.
+- Split by adjustments.
+- Validate split total.
+- Simplify group debts.
 
-Implement in `src/lib/debtSimplification.ts`.
+## Testing Libraries
 
-Input:
+Use the project’s existing test setup if present. If no setup exists, add the smallest compatible test setup only when a tested feature requires it.
 
-- Net balances per user inside a group and currency.
+Expected tests:
 
-Output:
+- Pure financial helpers.
+- Debt simplification.
+- Date and money formatting.
+- Service payload validation where practical.
 
-- Minimal practical payments from debtors to creditors.
-
-Rules:
-
-- Do not mix currencies in one simplification pass.
-- Preserve total net balance at zero after rounding.
-- Sort suggestions deterministically.
-- Show suggestions as recommendations, not automatic payments.
+Do not add heavy end-to-end tooling until the app shell and core flows are stable.

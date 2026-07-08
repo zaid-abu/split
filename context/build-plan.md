@@ -2,225 +2,317 @@
 
 ## Core Principle
 
-Build visible UI with realistic mock data first, verify interaction states, then wire Supabase feature by feature. Every financial workflow must be testable from the UI and backed by deterministic logic.
+Build the app in production-grade slices. Each slice should include visible UI, realistic states, domain boundaries, and validation appropriate to its risk. For UI-heavy features, build with realistic mock data first, verify design and interaction states, then wire Supabase through services.
 
----
+Every completed feature should satisfy:
+
+- Matches the visual direction in `context/designs/`.
+- Uses tokenized UI and registered reusable components.
+- Handles loading, empty, error, offline, and success states.
+- Keeps Supabase access in `src/services/`.
+- Keeps money logic in `src/lib/`.
+- Updates `ui-registry.md` when reusable UI is built.
+- Updates `progress-tracker.md` when feature work is completed.
+- Runs relevant validation, usually `npm run lint`.
 
 ## Phase 1 — Foundation
 
 ### 01 App Shell and Theme
 
-**UI:**
+Goal: Establish the Expo app shell, theme, safe areas, and shared primitives.
 
-- Root layout with safe areas, status bar, app background, and font loading.
-- Vibrant flat UI theme tokens in `src/constants/theme.ts`.
-- Shared primitives: `AppScreen`, `AppCard`, `AppText`, `AppButton`, `IconButton`.
+UI:
+
+- Root layout with status bar, safe areas, and app background.
+- Inter font loading.
+- Tokenized theme in `src/constants/theme.ts`.
 - Not-found screen.
+- Shared primitives: `AppScreen`, `AppCard`, `AppText`, `AppButton`, `IconButton`.
 
-**Logic:**
+Logic:
 
 - Expo Router root layout.
-- Splash screen controlled after fonts and session bootstrap are ready.
-- Light/dark mode foundation.
+- Splash screen controlled after bootstrap.
+- Light/dark foundation if supported.
+- Route groups for auth and tabs.
 
----
+Acceptance:
+
+- App boots without layout shift.
+- Shared primitives use tokens only.
+- Not-found route is readable and actionable.
 
 ### 02 Supabase Setup
 
-**UI:**
+Goal: Add backend foundation without leaking privileged behavior.
 
-- Developer-only connection error state if Supabase env vars are missing.
+UI:
 
-**Logic:**
+- Developer-facing missing-env state.
+- User-safe connection error state if auth bootstrap cannot complete.
 
-- Add and configure `@supabase/supabase-js`.
+Logic:
+
+- Add/configure `@supabase/supabase-js`.
 - Create `src/lib/supabase.ts`.
-- Add database types placeholder.
-- Configure environment variables.
-- Create initial Supabase migrations and RLS policies.
+- Add database types placeholder or generated types.
+- Configure env vars.
+- Add initial migrations and RLS policies.
 
----
+Acceptance:
+
+- No service role key in app code.
+- Missing env vars fail clearly.
+- Services can import the Supabase client from one place.
 
 ### 03 Auth and Onboarding
 
-**UI:**
+Goal: Complete first-run entry using the auth design reference.
+
+UI:
 
 - Splash/launch screen.
-- Optional onboarding carousel.
-- Sign up / log in with email, phone, Google, Apple.
-- OTP/email verification.
-- Profile setup: name, photo, currency preference.
-- Permissions screen for contacts and notifications.
+- Welcome carousel inspired by `context/designs/Auth Flow.png`.
+- Register screen.
+- Sign-in screen.
+- Verification screen.
+- Profile setup: name, avatar, default currency.
+- Permissions education: contacts and notifications.
+- Loading, validation, error, success, permission-denied states.
 
-**Logic:**
+Logic:
 
 - Supabase Auth session bootstrap.
 - Auth state provider.
 - Protected route redirects.
-- Profile row creation.
-- Onboarding completion routing.
+- Profile row creation/update.
+- Onboarding completion only after required profile/permission flow.
 
----
+Acceptance:
+
+- New user can move through welcome, register, verify if needed, profile setup, permissions, and Home.
+- Social/phone auth are placeholders unless wired.
+- Auth errors are human-readable.
 
 ## Phase 2 — Core Navigation and Home
 
 ### 04 Bottom Tabs
 
-**UI:**
+Goal: Establish authenticated navigation.
+
+UI:
 
 - Tabs: Home, Friends, Groups, Activity, Account.
-- Solid tab bar.
-- Active/inactive icon and label states.
+- Icon plus label tab items.
+- Active/inactive states.
+- Optional prominent central add/split action following `context/designs/image.png`.
 
-**Logic:**
+Logic:
 
 - Expo Router tabs layout.
 - Authenticated route protection.
 
----
+Acceptance:
+
+- Tabs are stable and safe-area aware.
+- Active route is visually clear.
+- Inactive tabs remain readable.
 
 ### 05 Home Dashboard
 
-**UI:**
+Goal: Build the production dashboard using realistic mock data first.
 
-- Net balance hero.
-- Total owed and owed-to-you summaries.
-- Recent activity preview.
+UI:
+
+- Header with greeting and avatar.
+- Net balance hero adapted from the wallet balance reference.
+- Summary cards: you owe, owed to you, total shared this month.
 - Quick actions: add expense, settle up, add friend, create group.
-- Empty, loading, error, offline states.
+- Recent friends with balance indicators.
+- Recent activity/transactions.
+- Optional spending preview chart card.
+- Loading, empty, error, offline, and success states.
 
-**Logic:**
+Logic:
 
 - Mock data first.
-- Wire dashboard query after expense and settlement models exist.
+- Dashboard hook/service contract.
+- Later wire Supabase after expenses and settlements exist.
 
----
+Acceptance:
+
+- Dashboard works at 320px.
+- Large amounts and names do not overlap.
+- CTAs route to appropriate flows or placeholders.
+- Empty state guides first action.
 
 ## Phase 3 — Friends
 
 ### 06 Friends List
 
-**UI:**
+UI:
 
-- Friend rows with avatar, name, subtitle, net balance.
-- Empty state and add friend CTA.
-- Search/filter interaction.
+- Search and filter.
+- Friend rows with avatar, name, last activity, and net balance.
+- Pending requests section.
+- Empty, loading, error, offline states.
 
-**Logic:**
+Logic:
 
-- Friendships schema and services.
-- Accepted/pending/blocked states.
+- Friendships schema and service.
+- Accepted, pending, blocked states.
+- Friend balance query.
 
----
+Acceptance:
+
+- Balance labels clearly say "you owe" or "owes you".
+- Pending requests are actionable.
 
 ### 07 Add Friend and Contact Import
 
-**UI:**
+UI:
 
 - Search by username/email/phone.
-- Invite via link/SMS.
-- Contact sync/import screen.
-- Permission denied state.
+- Invite link and share actions.
+- Contact import screen with pre-permission education.
+- Permission denied and limited states.
 
-**Logic:**
+Logic:
 
 - Friend request mutation.
-- Invite token generation.
-- Optional contacts permission and local matching.
+- Invite token generation/validation.
+- Optional contacts permission and matching.
 
----
+Acceptance:
+
+- Contact permission is never requested without context.
+- User can recover from denied permission.
 
 ### 08 Friend Detail
 
-**UI:**
+UI:
 
 - Friend profile header.
-- Shared expenses list.
-- Balance history.
-- Settle up CTA.
+- Net balance summary.
+- Shared expenses and settlements.
+- Settle-up CTA.
+- Empty/error/offline/conflict states.
 
-**Logic:**
+Logic:
 
 - Friend-level balance query.
-- Shared activity and expense filters.
+- Shared expense filters.
+- Settlement entry point.
 
----
+Acceptance:
+
+- Balance is explainable from visible activity.
+- Settle-up context is prefilled correctly.
 
 ## Phase 4 — Groups
 
 ### 09 Groups List
 
-**UI:**
+UI:
 
-- Group cards/rows with icon or cover, type, members, last activity, balance.
+- Group rows/cards with cover/icon, type, members, last activity, and balance.
+- Search/filter.
 - Empty state with create group CTA.
+- Loading, error, offline states.
 
-**Logic:**
+Logic:
 
 - Groups and group members schema.
 - User-scoped group queries.
 
----
+Acceptance:
+
+- Archived or left groups are handled deliberately.
 
 ### 10 Create Group
 
-**UI:**
+UI:
 
-- Name, type, icon/cover, default currency, member picker.
-- Group invite after creation.
+- Name.
+- Type.
+- Icon/cover.
+- Default currency.
+- Member picker.
+- Invite after creation.
+- Validation states.
 
-**Logic:**
+Logic:
 
 - Group creation transaction.
-- Initial member roles.
-- Cover upload.
+- Creator admin membership.
+- Optional cover upload.
+- Activity row.
 
----
+Acceptance:
+
+- Failed cover upload and failed group creation are distinct.
+- User cannot create an invalid group.
 
 ### 11 Group Detail and Settings
 
-**UI:**
+UI:
 
+- Group header and members.
+- Group balance summary.
 - Expense feed.
-- Members.
-- Total balance.
 - Quick add expense.
 - Settings: rename, cover, currency, leave/delete.
 - Manage members and admin roles.
-- Invite link/QR code.
+- Invite link/QR placeholder.
+- Realtime-visible activity state.
 
-**Logic:**
+Logic:
 
-- Group detail queries.
+- Group detail query.
 - Member management.
 - Invite validation.
 - Realtime activity updates.
 
----
+Acceptance:
+
+- Non-admin users do not see privileged actions as available.
+- Deleted/missing groups render not-found.
 
 ## Phase 5 — Expenses
 
 ### 12 Add Expense
 
-**UI:**
+UI:
 
-- Amount, currency, title, payer, group/friend context, participants.
+- Amount and currency.
+- Title.
+- Payer.
+- Group/friend context.
+- Participants.
 - Split method selector.
 - Category picker.
-- Date, notes, receipt/photo.
-- Save disabled until split validates.
+- Date.
+- Notes.
+- Receipt/photo.
+- Save disabled until valid.
+- Loading, validation, upload, offline, success, error states.
 
-**Logic:**
+Logic:
 
-- Expense, split, activity writes.
-- Receipt upload.
+- Expense service contract.
 - Split validation.
+- Receipt upload.
+- Activity and notification writes.
 
----
+Acceptance:
+
+- Split rows sum exactly to amount.
+- Save state is unambiguous.
+- Receipt failures are recoverable.
 
 ### 13 Split Methods
 
-**UI:**
+UI:
 
 - Equal split.
 - Percentage split.
@@ -228,227 +320,279 @@ Build visible UI with realistic mock data first, verify interaction states, then
 - Exact amount split.
 - Adjustment split.
 - Per-person validation messages.
+- Remainder explanation when useful.
 
-**Logic:**
+Logic:
 
-- Pure split calculation helpers.
-- Rounding and remainder tests.
+- Pure split helpers.
+- Deterministic rounding.
+- Tests for all split modes.
 
----
+Acceptance:
+
+- Every method passes exact-total tests.
+- Invalid splits cannot be saved.
 
 ### 14 Expense Detail, Edit, Comments
 
-**UI:**
+UI:
 
-- Who paid and who owes what.
+- Expense summary.
+- Who paid and who owes.
 - Receipt preview.
 - Edit history.
 - Comments thread.
 - Edit/delete actions.
 - Conflict resolution state.
 
-**Logic:**
+Logic:
 
 - Expense version checks.
-- Comments schema and realtime updates.
 - Soft delete.
+- Comments schema and realtime updates.
+- Activity records.
 
----
+Acceptance:
+
+- Stale edits are detected.
+- Deleted expenses do not disappear without user context.
 
 ### 15 Recurring Expenses
 
-**UI:**
+UI:
 
-- Recurring setup for rent, utilities, subscriptions, custom.
+- Recurring setup for rent, utilities, subscriptions, and custom schedules.
 - Next run preview.
 - Pause/delete recurrence.
+- Failure and retry states.
 
-**Logic:**
+Logic:
 
 - Recurring templates.
-- Edge Function or scheduled process plan.
+- Scheduled process or Edge Function plan.
 
----
+Acceptance:
+
+- Recurrence preview is understandable before save.
+- Failed generation is visible.
 
 ## Phase 6 — Settling Up
 
 ### 16 Record Settlement
 
-**UI:**
+UI:
 
-- Choose payer, receiver, amount, currency, method, note.
-- Payment confirmation.
+- Payer.
+- Receiver.
+- Amount and currency.
+- Method.
+- Optional note.
+- Confirmation screen.
 - Success/failure states.
 
-**Logic:**
+Logic:
 
 - Settlement mutation.
 - Activity and notification rows.
 - Balance refresh.
 
----
+Acceptance:
+
+- User understands whether payment is only recorded or actually processed.
 
 ### 17 Simplify Debts
 
-**UI:**
+UI:
 
 - Group-level minimized transaction suggestions.
 - Per-suggestion settle CTA.
-- Explanation of assumptions.
+- Currency assumptions.
+- Empty settled state.
 
-**Logic:**
+Logic:
 
 - Debt simplification helper.
-- Currency-specific suggestion generation.
+- Multi-currency guard.
+- Deterministic sorting.
 
----
+Acceptance:
+
+- Suggestions preserve group net balance.
+- No cross-currency simplification pass.
 
 ### 18 Integrated Payments Placeholder
 
-**UI:**
+UI:
 
-- Linked payment methods.
-- Method selection.
-- Processing, success, failure, retry states.
+- Payment method placeholder.
+- Clear unavailable/not-enabled copy.
 
-**Logic:**
+Logic:
 
-- Keep provider integration behind a service boundary.
-- Do not execute real payments until provider is selected and approved.
+- No actual payment execution until provider is selected.
 
----
+Acceptance:
+
+- App never implies real payment was sent unless integration exists.
 
 ## Phase 7 — Activity and Notifications
 
 ### 19 Activity Feed
 
-**UI:**
+UI:
 
-- Chronological feed of expenses, edits, settlements, comments, invites.
-- Filters by group/friend/action.
+- Chronological feed.
+- Filters.
+- Empty/loading/error/offline states.
+- Grouped date sections.
 
-**Logic:**
+Logic:
 
-- Activity query and realtime subscription.
+- Activity query.
+- Realtime updates.
 
----
+Acceptance:
+
+- Activity explains financial changes clearly.
 
 ### 20 Notifications
 
-**UI:**
+UI:
 
-- Reminders.
-- Friend requests.
-- Payment confirmations.
-- Mark read/unread.
+- Actionable notification list.
+- Read/unread states.
+- Notification preferences entry.
 
-**Logic:**
+Logic:
 
-- Notification rows.
-- Push notification permission and preferences.
+- Notification query and mutation.
+- Push permission integration.
 
----
+Acceptance:
+
+- In-app notifications work even if push delivery fails.
 
 ## Phase 8 — Analytics and Export
 
 ### 21 Spending Overview
 
-**UI:**
+UI:
 
-- Week/month/year selector.
-- Total spent, owed, owed-to-you.
-- Spending trend chart.
+- Week/month/year/custom segmented control.
+- Spending summary.
+- Trend preview.
+- Empty analytics state.
 
-**Logic:**
+Logic:
 
-- Analytics aggregation service.
+- Analytics service.
+- Date range helpers.
 
----
+Acceptance:
+
+- Labels do not rely on color alone.
 
 ### 22 Category, Trend, and Group Analytics
 
-**UI:**
+UI:
 
 - Category breakdown.
-- Trends over time.
-- Per group/per friend analytics.
-- Group-level top spenders, top categories, monthly totals.
-- Personal insights.
+- Spending trend.
+- Group analytics.
+- Accessible legends.
 
-**Logic:**
+Logic:
 
-- Aggregations from expenses and splits.
-- Chart data normalization.
+- Chart library selection.
+- Aggregation queries.
 
----
+Acceptance:
+
+- Chart dependency documented before install.
 
 ### 23 Export and Reports
 
-**UI:**
+UI:
 
 - CSV export first.
-- PDF export later.
-- Date range and scope selectors.
+- PDF later.
+- Export history or success state.
 
-**Logic:**
+Logic:
 
 - Export generation.
-- Supabase Storage record.
+- Storage bucket usage if files are persisted.
 
----
+Acceptance:
 
-## Phase 9 — Production States
+- Exported amounts and currencies are explicit.
+
+## Phase 9 — Production States and Settings
 
 ### 24 Search and Filters
 
-**UI:**
+UI:
 
-- Global search for expenses, friends, groups.
-- Filter/sort modal by date, category, amount, person.
+- Global search.
+- Filter modal.
+- Empty/no-results states.
 
-**Logic:**
+Logic:
 
-- Search services.
-- Indexed database queries.
+- Scoped search services.
 
----
+Acceptance:
+
+- Search never leaks inaccessible records.
 
 ### 25 Account and Settings
 
-**UI:**
+UI:
 
-- Account/profile.
-- Edit profile.
-- Currency and locale settings.
-- Notification preferences.
-- Linked payment methods.
-- Security settings: password, biometric lock, 2FA.
-- Privacy settings.
-- Help/support and FAQ.
-- Feedback/rate app.
-- About/legal.
-- Delete account flow.
+- Profile.
+- Default currency.
+- Notification settings.
+- Privacy/security.
+- Help.
+- Logout.
+- Delete account confirmation.
 
-**Logic:**
+Logic:
 
-- Profile mutations.
-- Preference storage.
-- Account deletion Edge Function.
+- Profile update service.
+- Account lifecycle actions.
 
----
+Acceptance:
+
+- Destructive account actions are confirmed and clearly explained.
 
 ### 26 Offline, Sync, and Conflict Handling
 
-**UI:**
+UI:
 
-- Offline indicator.
-- Queued mutation states.
-- Sync failure recovery.
-- Multi-currency conflict resolution.
-- Simultaneous edit conflict resolution.
+- Offline banner.
+- Queued mutation list or status.
+- Conflict resolution screens for expenses.
 
-**Logic:**
+Logic:
 
-- Network state.
-- Optimistic writes where safe.
-- Version-based conflict detection.
+- Connectivity state.
+- Mutation queue if implemented.
+- Version conflict handling.
+
+Acceptance:
+
+- Failed writes cannot be mistaken for saved writes.
+
+## Global Definition of Done
+
+A phase or feature is done when:
+
+- UI follows `context/designs/` and token rules.
+- Required states are present.
+- Financial logic is deterministic and tested when touched.
+- Supabase access stays in services.
+- Security boundaries are preserved.
+- Accessibility basics are met.
+- `ui-registry.md` and `progress-tracker.md` are updated.
+- Relevant validation has been run or a reason is documented.
